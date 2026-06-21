@@ -1,0 +1,264 @@
+/* =================
+   全体
+================= */
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+  linear-gradient(
+    135deg,
+    #1e293b,
+    #1e293b,
+    #020617
+  );
+
+  color: white;
+  font-family: sans-serif;
+
+  display:flex;
+  justify-content:center;
+  align-items: center;
+}
+
+
+/* =================
+   studyエリア
+================= */
+
+#study-area {
+  width:  90%;
+  max-width: 1000px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+
+
+/* =================
+   ナビバー
+================= */
+
+#nav-bar {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 20px;
+  padding: 20px 30px;
+  backdrop-filter: blur(10px);
+}
+
+#nav-menu {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#deck-name {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+#card-counter {
+  font-size: 1.1rem;
+  opacity: 0.8;
+}
+
+/* =================
+   カード
+================= */
+
+#card-container {
+  display: flex;
+  
+  justify-content: center;
+}
+
+#card-display {
+  width: 100%;
+  max-width: 700px;
+  min-height: 350px;
+
+  border:none;
+  border-radius: 30px;
+
+  padding: 40px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,0.95),
+      rgba(240,240,240,0.92)
+    );
+
+    color: #111827;
+
+    font-size: 2.5rem;
+    font-weight: bold;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    text-align: center;
+
+    cursor:pointer; 
+
+    box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+
+    transition:
+      transform 0.2s,
+      box-shadow 0.2s;
+}
+
+#card-display:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+}
+
+#front-area {  
+  position: absolute;
+  bottom: 6rem;  
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+#front-area.hidden,
+#back-area.hidden {
+    display: none;
+}
+
+#word {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #333;
+  letter-spacing: 0.05em;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+#phonetics {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+}
+
+.audio-btn {  
+  background:transparent;  
+  border: 1px solid #ccc;
+  border-radius: 999px;
+  padding: 0.3rem;
+  cursor: pointer;
+
+  font-size: 1rem;
+  font-style: italic;
+  opacity: 0.75;
+}
+
+.audio-btn:hover {
+  background: #f5f5f5;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.audio-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.phonetic-text {
+  font-size: 1rem;
+  font-style: italic;
+  opacity: 0.75;
+}
+
+
+
+#back-area {
+  position: absolute;
+  top: 1em;  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+#meaning-navigation {
+  display:flex;
+  gap: 1em;
+
+  font-size: 0.6em;
+  min-width:2rem;
+}
+
+#meaning-page {
+  font-size: 0.75rem;
+  font-weight: normal;
+  color: #6b7280;
+  opacity: 0.75;
+  letter-spacing: 0.05em;
+  margin-top: -0.25rem;
+}
+
+
+#definitions {
+  white-space: normal;
+  overflow-wrap: break-word;
+  font-size: 1rem;
+  max-height: 14.5rem;
+  /*overflow:hidden;*/
+  overflow-y: auto;
+  padding-bottom: 1rem;
+}
+
+
+/* =================
+   コントロール
+================= */
+
+#controll-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.controlls,
+#back-btn {
+  border: none;
+  background: rgba(255,255,255,0.1);
+  color: white;
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 14px 22px;
+  font-size: 1.2rem;
+  cursor: pointer;
+
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+
+.controlls:hover,
+#back-btn:hover {
+  background: rgba(255,255,255,0.2);
+  transform: translateY(-3px);
+}
+
+.hidden {
+  display: none;
+}
+
+/*prev/nextボタンのアクティブ・非アクティブの視覚化クラス*/
+
+.disabled-arrow {
+  color: #9ca3af;
+  opacity: 0.35;
+  transform: scale(0.95);
+  cursor: default;
+}

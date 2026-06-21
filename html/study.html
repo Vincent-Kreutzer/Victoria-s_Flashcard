@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <title>Victoria's flashcard App</title>  
+    <meta name="viewport" width="device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../common.css">
+    <link rel="stylesheet" href="../study.css">
+    </head>
+
+  <body>
+
+    <div id="study-area"><!--body以下ページの最上位タグ-->
+      
+      <div id="nav-bar"><!--画面内上部のナビゲーションdiv-->
+        <nav id="nav-menu">
+          <h3 id="deck-name"></h3>
+          <div id="card-counter"><!-- カードのインデックス / 総数--></div>
+          <button id="back-btn">Back to Top</button>
+        </nav>
+      </div>
+           
+      <div id="card-container"><!--カードを表示する枠-->
+       
+        <div id="card-display"><!-- カードを表示、ここをクリックで表示反転 -->
+        
+          <div id="front-area">
+              <span id="word"></span>
+              <span id ="phonetics"></span>
+          </div>
+
+          <div id="back-area" class="hidden">
+            <div id="meaning-navigation">
+              <span id="prev-meaning-btn">◀</span>
+              <span id="part-of-speech"></span>
+              <span id="next-meaning-btn">▶</span>              
+            </div>
+            <span id="meaning-page"><!--品詞・意味の現在のページ・総ページ数を表示--></span>
+            <p id="definitions"></p>           
+          </div>
+
+          
+        </div>
+      </div>
+      
+      <div id="controll-container">
+        <button id="first-card-btn" class="controlls">⏮</button>
+        <button id="prev-card-btn" class="controlls">◀</button>    
+        <button id="next-card-btn" class="controlls">▶</button>
+        <button id="last-card-btn" class="controlls">⏭</button>
+      </div>   
+
+      </div>
+      
+    </div>
+    
+    <script src="../study.js"></script>
+  </body>
+</html>

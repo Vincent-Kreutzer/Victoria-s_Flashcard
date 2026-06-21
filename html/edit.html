@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <title>Victoria's flashcard App</title>  
+    <meta name="viewport" width="device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../common.css">
+    <link rel="stylesheet" href="../edit.css">
+  </head>
+  <body>
+
+    <div id="page-wrapper">
+
+      <div id="header">
+
+        <div id="title-area">
+          <h1 class="page-title">Victoria's Flashcard App</h1>
+          <div class="title-line"></div>
+          <h3 id="deck-name"></h3>
+        </div>        
+
+          <!--操作メニュー-->
+        <div id="header-actions">        
+          <button id="add-card-btn">+ New Card</button>
+          <button id="sort-by-az">Sort A-Z</button>
+          <button id="rename-deck-btn">✎ Rename Deck</button>
+          <button id="back-btn">⇐ Back</button>
+          <button id="delete-deck">🗑️ Delete Deck</button>
+        </div>
+
+          <!--デッキの名前変更モーダル-->
+        <div id="rename-deck-area" class="hidden">
+          <input type="text" id="input-deckname" placeholder="deck name">
+          <button id="confirm-deckrename-btn">submit</button>
+          <button id="cancel-deckrename-btn">cancel</button>
+        </div>  
+
+      </div><!--header-->
+             
+      <!--カード表示欄、内容はrender関数で作成-->
+      <div id="card-container">
+        <!--カード表示欄-->
+      </div>
+      
+
+      <!--新規単語カード作成モーダル-->
+      <div id="card-edit-modal" class="hidden">
+
+        <div id="card-edit-area" class="modal-panel">
+
+          <!--モーダルタイトル-->
+          <h2 class="modal-title">Card Editor</h2>
+
+          <!--単語検索ボタン-->
+          <div class="word-search-row">
+            <input type="text" id="word-input" placeholder="Word">
+            <button id="search-word-btn">search</button>
+          </div>
+
+          <!--発音記号とオーディオボタン-->
+          <div id="phonetic-area"></div>
+
+          <textarea id="modal-definition-area" placeholder="Definition"></textarea>
+
+          <div class="modal-btns">
+            <button id="submit-card-btn">Add</button>
+            <button id="update-card-btn" class="hidden">Update</button><!--編集時にOnにする-->
+            <button id="cancel-add-btn">Cancel</button>
+          </div>       
+         
+        </div>
+      </div>
+    </div>
+
+    
+
+    <script src="../edit.js"></script>
+  </body>
+</html>

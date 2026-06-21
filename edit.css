@@ -1,0 +1,435 @@
+/* =================
+   EDIT PAGE
+================= */
+
+.page-title {  
+  font-size: 28px;
+  opacity: 0.88;
+}
+
+.title-line {
+  width: 220px;
+  height: 1px;
+  background: #999;
+  margin: 10px auto 14px;
+}
+
+#header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #ececec;
+}
+
+#title-area {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  
+}
+
+#deck-name { 
+  font-family: Georgia, serif;
+  font-size: 1.6rem;
+  color: #2d2d2d;
+  width: 100%;
+  text-align: center;
+  margin-bottom:2rem;
+}
+
+#header-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+#header button,
+#add-card-btn,
+#sort-by-az {
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: 0.2s ease;
+}
+
+#rename-deck-btn,
+#back-btn,
+#sort-by-az{
+  background: #ececec;
+  color: #333;
+}
+
+#delete-deck {
+  background: #fbeaea;
+  color: #8b2c2c;
+}
+
+#add-card-btn {
+  background: #2d2d2d;
+  color: white;
+}
+
+#header button:hover,
+#add-card-btn:hover,
+#sort-by-az:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+}
+
+/* =================
+   CARD LIST
+================= */
+
+#card-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.word-card {
+  background: #fff;
+  border: 1px solid #ececec;
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.06);
+  transition: 0.25s ease;/*変化をゆっくり*/
+
+}
+
+.word-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 28px rgba(0,0,0,0.10);
+}
+
+.info-group {
+  margin-bottom: 16px;  
+}
+
+.info-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 0.5px;/*文字の水平スペース*/
+  margin-bottom: 4px;
+}
+
+.div-word {
+  display:flex;
+  justify-content:center;
+}
+.card-word {
+  margin: 0;
+  color: #333;  
+  
+}
+
+.word-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  
+}
+
+.info-group .info-label,
+.part-of-speech-zone {
+  display: flex;
+  justify-content: center;
+}
+
+.part-of-speech {
+  display: inline-block;
+  padding: 0.3em 0.8em;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  background-color: #f0f4ff;
+}
+
+.definition-area {
+  min-height: 16rem;
+  line-height: 1.7;
+  font-size: 1rem;
+  overflow: hidden;/*はみ出た部分は非表示*/
+}
+
+.definition-area.expanded {
+  height: auto;
+}
+
+.toggle-btn {
+  text-align:right;
+}
+
+.info-group:first-of-type .card-word {
+  font-size: 1.35rem;
+}
+/*info: first-of-type⇒親要素の中で同じタグの最初の要素を指定する疑似クラス*/
+
+.info-group:nth-of-type(3) .card-word {
+  font-family: Georgia, serif;
+  line-height: 1.7;
+}
+/*info: nth-of-type⇒同じ親要素を持つ兄弟要素の中から、
+同じタグ名の要素だけを順番に数えて特定の位置にある要素を指定する疑似クラス*/
+
+.navigation-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.card-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.card-actions button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.card-actions button[data-action="edit"] {
+  background: #2d2d2d;
+  color: white;
+}
+
+.card-actions button[data-action="delete"] {
+  background: #ececec;
+  color: #444;
+}
+
+
+/* =================
+   BOTTOM TOOLBAR
+================= */
+
+#card-edit-modal {
+  position: fixed;
+  inset: 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(4px);
+
+  z-index: 1000;
+}
+
+#card-edit-modal.hidden {
+  display: none;
+}
+
+
+/* =================
+   CARD FORM MODAL
+================= */
+
+#card-edit-area {
+  display: flex;
+  flex-direction: column;
+
+  width: 90%;
+  max-width: 680px;
+  max-height: 90vh;
+  margin: auto;
+
+  padding: 32px;
+  overflow-y: auto;
+
+  background: rgba(255,255,255,0.96);
+  border-radius: 22px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.18);
+}
+
+#card-edit-modal.hidden {
+  display: none;
+}
+
+#word-input,
+#phonetic-input,
+#modal-definition-area,
+#meaning-input {
+  width: 100%;
+  margin-bottom: 16px;
+  padding: 12px 14px;
+
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #fafafa;
+
+  font-size: 14px;
+  outline: none;
+}
+/*info: outline⇒要素の外側に輪郭線を表示するためのプロパティ。
+要素の境界線（border）のさらに外側に描画され、要素の幅やレイアウトには影響を与えない。*/
+
+#word-input {
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.audio-btn {
+  margin-right: 1em;
+  padding: 4px 10px;
+
+  background: white;
+  border: 1px solid #ececec;;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  border-radius:12px;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+
+  margin-bottom: 1em;
+}
+
+.audio-btn:hover {
+  transform: scale(1.05);
+  background: #ebebeb;
+}
+
+.audio-btn:active {
+  transform: scale(0.95);
+}
+
+#modal-definition-area,
+#meaning-input {
+  min-height: 120px;
+  resize: vertical;/*要素のサイズ変更を許可、値でリサイズ方向を指定*/
+  line-height: 1.7;
+}
+
+.definition-area {
+  font-family: Geogia, serif;
+}
+
+#search-word-btn {
+  margin-bottom: 18px;
+  padding: 10px 16px;
+
+  border: 1px solid #333;
+  border-radius: 10px;
+
+  background: white;
+  color: #333;
+
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+#search-word-btn:hover {
+  background: #333;
+  color: white;
+}
+
+#submit-card-btn,
+#update-card-btn,
+#cancel-add-btn {
+  padding: 12px 18px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+#submit-card-btn,
+#update-card-btn {
+  background: #2d2d2d;
+  color: white;
+}
+
+#cancel-add-btn {
+  background: #ececec;
+  color: #444;
+}
+
+#submit-card-btn:hover,
+#update-card-btn:hover,
+#cancel-add-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+}
+
+
+/* =================
+   RENAME AREA
+================= */
+
+#rename-deck-area {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+}
+
+#rename-deck-area.hidden {
+  display: none;
+}
+
+#input-deckname {
+  padding: 10px 14px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #fafafa;
+}
+
+.navigation-div {
+  display: flex;
+  gap: 8px;
+}
+
+/* =================
+   RESPONSIVE
+================= */
+
+@media (max-width: 600px) {
+  #header {
+    flex-direction : column;
+    align-items: stretch;
+  }
+
+  #header-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  #header-actions button {
+    width: 100%;
+  }
+  
+  #deck-name {
+    margin-right: 0;
+    text-align: center;
+  }
+
+  #card-edit-modal {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #add-card-btn,
+  #sort-by-az {
+    width: 100%;
+  }
+
+  #card-edit-area {
+    width: 94%;
+    padding: 24px;
+  }
+}
+

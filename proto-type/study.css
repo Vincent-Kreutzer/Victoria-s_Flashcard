@@ -1,0 +1,23 @@
+#study-area {
+  background-color:rgb(100, 230, 210);
+}
+
+#nav-bar {}
+
+#main-area {}
+
+#card-container {
+  background-color: gray;
+}
+
+
+.back {
+  background-color: #333;
+  color: #fff;
+};
+
+#card-front {}
+
+#card-reverse {}
+
+#controlls {}

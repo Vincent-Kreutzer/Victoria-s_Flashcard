@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <title>Victoria's flashcard App</title>  
+    <meta name="viewport" width="device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../common.css">
+  </head>
+  <body>
+
+    <div id="page-wrapper">
+      <div id="header">
+        <h3 id="deck-name"></h3>
+
+        <button id="rename-deck-btn">✎ Rename Deck</button>
+        <div id="rename-deck-area" class="hidden">
+          <input type="text" id="input-deckname" placeholder="deck name">
+          <button id="confirm-deckrename-btn">submit</button>
+          <button id="cancel-deckrename-btn">cancel</button>
+        </div>
+        
+        <button id="delete-deck">🗑️ Delete Deck</button>
+        <button id="back-btn">⇐ Back</button>
+      </div>
+
+      <div id="main">
+        <table id="card-table" border="1">
+          <thead>
+            <td>No.</td>
+            <td>Word</td>
+            <td>meaning</td>
+          </thead>
+          <tbody id="table-body">
+            <!-- ここにjsでカードを一覧表示する-->
+          </tbody>
+              
+        </table>
+      </div>
+
+      <div id="footer">
+        <button id="add-card-btn">+ New Card</button>
+        <div id="add-card-area" class="hidden">
+          <input type="text" id="word-input" placeholder="Word">
+          <input type="text" id="meaning-input" placeholder="Meaning">
+          <button id="submit-card-btn">Add</button>
+          <button id="update-card-btn" class="hidden">Update</button>
+          <button id="cancel-add-btn">Cancel</button>
+        </div>
+
+        <button id="sort-by-az">Sort A-Z</button>
+               
+      </div>
+    </div>
+
+    <script src="../edit.js"></script>
+  </body>
+</html>

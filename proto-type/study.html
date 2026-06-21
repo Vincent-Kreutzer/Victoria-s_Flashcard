@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <title>Victoria's flashcard App</title>  
+    <meta name="viewport" width="device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../common.css">
+    <link rel="stylesheet" href="../study.css">
+    </head>
+
+  <body>
+    <div id="study-area">
+
+      <div id="nav-bar">
+        <nav id="nav-menu">
+          <h3 id="deck-name"></h3>
+          <div id="card-counter"><!-- カードのインデックス / 総数--></div>
+          <button id="back-btn">戻る</button>
+        </nav>
+      </div>
+
+      
+      
+      <div id="card-container">
+        <button id="card-display"><!-- ここにカードを表示する --></button>
+      </div>
+
+        <div id="controll-container">
+          <button id="first-card-btn" class="controlls">⏮</button>
+          <button id="prev-card-btn" class="controlls">◀</button>    
+          <button id="next-card-btn" class="controlls">▶</button>
+          <button id="last-card-btn" class="controlls">⏭</button>
+        </div>   
+
+      </div>
+      
+    </div>
+    
+    <script src="../study.js"></script>
+  </body>
+</html>

@@ -1,0 +1,419 @@
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.hidden {
+  display: none;
+}
+
+body {
+  background: #f3f4f6;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+  "Hiragino Kaku Gothic ProN", "Noto Sans JP",
+  Meiryo, sans-serif;
+  line-height: 1.6;
+}
+
+/*画面全体の土台部分*/
+#page-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 16px;
+
+  background: white;
+  border-radius: 16px;
+
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+#top-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+/*ページタイトル*/
+.page-title {
+  font-family: 'Great Vibes', cursive;
+  font-size: 48px;
+  color: #2d2d2d;
+  margin: 0;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.08);
+}
+
+.title-line {
+  width: 220px;
+  height: 1px;
+  background: #999;
+  margin: 10px auto 14px;
+}
+
+.sub-title {
+  font-family: Georgia, serif;
+  font-size: 14px;
+  letter-spacing: 2px;
+  color: #666;
+  margin: 0;
+  font-style: italic;
+}
+
+#word-search {
+  margin-bottom: 56px;
+}
+
+#search-form {
+  display: flex;
+  gap: 10px;  
+}
+
+#search-input {
+  flex: 1;
+  background: #f8f7f5;
+  padding: 10px 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+}
+
+#search-input:focus {
+  border-color: #999;
+}
+
+#search-btn {
+  background: transparent;
+  color: #333;  
+  padding: 10px 16px;
+  border: 1px solid #333;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+#search-btn:hover {
+  background: #333;
+  color: white;
+
+}
+
+#add-new-card-btn {
+  background: #2d2d2d;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+#add-new-card-btn:hover {
+  background: #555;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+
+h3 {
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+  color: #444;
+}
+
+#phonetic-zone, #en-zone, #jp-zone {
+  margin-bottom: 24px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: #fafafa;
+}
+
+#en-zone {
+  background: #f7f5f2
+}
+
+#en-definition {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+#jp-translation {
+  font-size: 0.9rem;
+  color: #777;
+}
+
+
+/*メニューバー*/
+#deck-toolbar {
+  display: flex;
+  justify-content: space-between;/*左右両端揃え*/
+  align-items: center;/*縦方向中央揃え*/
+  margin-bottom: 24px;
+}
+
+#deck-toolbar h2{
+  font-family: Georgia, serif;
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+#deck-toolbar button {
+  font-family: inherit;
+  background: #333;
+  color: white;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;;
+  transition: 0.25s ease;
+}
+
+#deck-toolbar button:hover {
+  background-color: #444;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+  transform: translateY(-2px);
+}
+
+#deck-toolbar button:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+}
+
+/*カード一覧エリア*/
+#deck-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 320px));
+  gap: 24px;
+  justify-content: center;
+}
+
+/*各カード*/
+.deck-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 22px;
+  width: 92%;
+  margin: 0 auto;
+  max-width: none;
+  min-height: 280px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  
+  border: 1px solid #ececec;  
+  
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.06);
+
+  transition: 0.25s ease;
+}
+
+.deck-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 28px rgba(0,0,0,0.10);
+}
+
+/*カード内タイトル*/
+.deck-name {
+  font-size: 20px;
+  font-weight: bold;
+  color: #2d2d2d;
+  margin-bottom: 14px;
+  
+}
+
+.words {
+  font-size: 14px;
+  color: #777;
+}
+
+/*words表示*/
+.word-count {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 16px;
+  color: #9c7b47;
+}
+
+/*ボタンエリア*/
+ .deck-card .card-btns {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+ }
+
+ .deck-card button {  
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s;
+  opacity: 0.9;
+ }
+
+ .study-btn {
+  background: #2d2d2d;
+  color: white;
+  letter-spacing: 1px;
+ }
+
+ .edit-btn {
+  background: #e8e8e8;
+  color: #333;
+ }
+
+/*モーダル*/
+#modal-overlay {
+  position: fixed;
+  inset: 0; /*positionプロパティと食合わせて使い、上下左右を一行で一括指定*/
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(4px);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 1000;
+}
+
+#modal-overlay.hidden {
+  display: none;
+}
+
+#card-add-modal,
+#deck-create-modal {
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  
+  background: rgba(255,255,255, 0.96);
+  border-radius: 22px;
+  padding: 28px;
+
+  box-shadow: 0 24px 60px rgba(0,0,0,0.18);
+
+  animation: modalPop 0.25s ease;
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap:14px;
+}
+
+.modal-content label {
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 14px;
+  color: #444;
+  text-align: left;
+}
+
+.modal-content input,
+.modal-content textarea,
+.modal-content select {
+  width: 100%;
+  padding: 12px 14px;
+
+  border: 1px solid #ddd;
+  border-radius: 10px;
+
+  background: #fafafa;
+
+  font-size: 14px;
+
+  outline: none;
+}
+
+#card-add-modal h2,
+#deck-create-modal h2 {
+  margin-top: 0;
+  margin-bottom: 24px;
+  font-family: Georgia, serif;
+  font-size: 1.5rem;
+  color: #2d2d2d;
+  text-align: center;
+}
+
+#input-definition {
+  min-height: 120px;
+  resize: vertical;
+}
+
+#input-meaning {  
+  resize: vertical;
+}
+
+.modal-btns {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  flex: 1;  
+}
+
+.modal-btns button {
+  border: none;
+  border-radius: 10px;
+  padding: 12px 18px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+#submit-card-btn,
+#create-btn {
+  background: #2d2d2d;
+  color: white;
+}
+
+#submit-card-btn:hover,
+#create-btn:hover {
+  background: #444;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+}
+
+#close-card-add-modal-btn,
+#cancel-btn {
+  background: #ececec;
+  color: #444;
+}
+
+#close-card-add-modal-btn:hover,
+#cancel-btn:hover {
+  background: #dcdcdc;
+}
+
+ @media (max-width: 600px) {
+  #search-form {
+    flex-direction: column;
+  }
+  #search-btn,
+  #add-new-card-btn {
+    width: 100%;
+  }
+
+  #search-input {
+    width: 100%;
+    text-align: center;
+  }
+
+  #deck-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .deck-card {
+    width: 100%;
+    margin: 0;
+  }
+ }

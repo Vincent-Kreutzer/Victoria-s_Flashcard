@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <title>Victoria's Flashcard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--<link rel="stylesheet" href="../common.css"> -->
+    <link rel="stylesheet" href="../common.css">
+  </head>
+  <body>
+    <div id="page-wrapper">
+
+      <header id="top-header"><!--アプリ題名と副題を表示する箇所-->
+        <h1 class="page-title">Victoria's Flashcard App</h1>
+        <div class="title-line"></div>
+        <p class="sub-title">Your personal language workspace</p>
+      </header>
+
+      <main>
+
+        <section id="word-search">
+          
+          <!--検索フォーム-->
+          <div id="search-form">
+            <input type="text" id="search-input" placeholder="Input Word">
+            <button id="search-btn">Search</button>
+            <button id="add-new-card-btn" class="hidden">+ Add to Deck</button>
+          </div><!--search-form-->
+          
+          <!--検索結果表示欄-->
+          <div id="search-result" class="hidden">        
+            <h2>▼ Result</h2>
+
+            <div id="phonetic-zone"><!--発音記号表示-->
+              <h3>Phonetic</h3>
+              <p id="en-phonetic"></p>
+            </div>
+
+            <div id="en-zone"><!--英英訳表示-->
+              <h3>English Definition</h3>
+              <p id="en-definition"></p>
+            </div><!--en-zone-->
+
+            <div id="jp-zone"><!--日本語訳表示-->
+              <h3>Japanese Meaning</h3>
+              <p id="jp-translation"></p>
+            </div><!--jp-zone-->
+
+            
+          </div><!--search-result-->
+
+        </section><!--word-search-->
+
+        
+
+
+        <!--既存デッキ表示-->
+        <section id="decks-section">
+          
+          <div id="deck-toolbar">
+            <div id="deck-toggle">
+              <h2 id="my-decks"><span id="arrow">▶ </span>My Decks</h2>
+            </div>                   
+            <button id="add-new-deck-btn">+ New Deck</button>                    
+          </div>
+          
+
+          <div id="deck-panel" class="hidden">         
+                          
+            <div id="deck-container">          
+              <div class="deck-card" data-deck-id="0">
+                <h3 class="deck-name"></h3>
+                <p class="words">Words:<span class="word-count"></span></p>
+                <div class="card-btns">
+                  <button class="study-btn">study</button>
+                  <button class="edit-btn">edit</button>
+                </div><!--card-btns-->         
+              </div><!--deck-card-->
+            </div><!--deck-container-->
+          </div><!--deck-panel-->
+
+        </section><!--decks-section-->     
+
+      </main>
+    </div><!--page-wrapper-->
+
+
+
+    <div id="modal-overlay" class="hidden">            
+
+        <!--検索単語のデッキへの追加-->
+        <section id="card-add-modal" class="hidden">
+          <h2 id="addiction-toggle">▶ Add Card to Deck</h2>
+
+          <div class="modal-content">
+            <label>Word</label>
+            <input type="text" id=input-word placeholder="word">
+
+            <label>Phonetic</label>
+            <input id=input-phonetic placeholder="phonetic" readonly>
+
+            <label>Definition</label>
+            <textarea id="input-definition" placeholder="definition" readonly></textarea>
+
+            <label>Meaning</label>
+            <textarea id="input-meaning" placeholder="meaning"></textarea>
+
+            <label>Deck</label>
+            <select id="select-deck"><!--デッキデータはjsでローカルストレージから取得する--></select>
+
+            <div class="modal-btns">
+              <button id="submit-card-btn">Submit</button><!--単語をデッキに追加する-->
+              <button id="close-card-add-modal-btn">Cancel</button>
+            </div>
+            
+          </div><!--modal-content-->
+        </section><!--card-add-modal-->
+
+
+        <!--新規デッキ追加モーダル-->
+        <section id="deck-create-modal" class="hidden">
+          <h2>Create New Deck</h2>
+          <div class="modal-content">
+            <label>Deck Name</label>
+            <input type="text" id="input-deckname" placeholder="Deck name">
+            <div class="modal-btns">
+              <button id="create-btn">Create</button>
+              <button id="cancel-btn">Cancel</button>   
+            </div>
+                
+        </div><!--modal-content-->
+        </section>
+      
+    </div><!--modal-overlay-->
+
+    <script src="../index.js"></script>
+  </body>
+</html>
