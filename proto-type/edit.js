@@ -132,7 +132,7 @@ function renameDeck() {
 
 
 //デッキ内カードを一覧表示する
-function renderCard() {
+function renderCards() {
   console.log("render using", cards);
   tableBody.innerHTML = "";
  
@@ -205,7 +205,7 @@ function addNewCard() {
   const newCard = {id: newId, deckId: currentDeckId, word: wordInput.value, meaning: meaningInput.value};
   cards.push(newCard);
   saveData("flashcard_cards", cards);
-  renderCard();
+  renderCards();
   clearCardForm();
 }
 
@@ -222,7 +222,7 @@ cardTable.addEventListener("click", (e) => {
   if (eventTarget.dataset.action === "delete") {         
     deleteCard(eventTarget);    
     saveData("flash_cards", cards);
-    renderCard();
+    renderCards();
   }
   
   //編集イベント：ターゲットにあるデータセットアクションの値がeditだった場合に以下の処理を行う
@@ -287,7 +287,7 @@ function updateCard() {
 
     //配列再読み込みと表示
     saveData("flashcard_cards", cards);
-    renderCard();
+    renderCards();
     
 
     //入力欄をクリア/editingCardIdをnullに戻す
@@ -319,7 +319,7 @@ function sortCards() {
   } else {
     sortMode = null;
   }
-  renderCard();
+  renderCards();
 }
 
 
@@ -355,7 +355,7 @@ document.addEventListener("DOMContentLoaded", ()=> {
   
   loadData(),
   showEditingDeck();
-  renderCard();
+  renderCards();
   console.log("cards contains", cards)
 })
 

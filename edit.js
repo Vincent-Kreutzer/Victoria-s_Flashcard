@@ -56,7 +56,7 @@ const submitCardBtn = document.getElementById("submit-card-btn");//新規カー�
 const updateCardBtn = document.getElementById("update-card-btn");//カード編集確定
 const cancelAddBtn = document.getElementById("cancel-add-btn");
 
-
+const scrollTopBtn = document.getElementById("scroll-top-btn");
 //並び替えボタンDOM
 const sortByAz = document.getElementById("sort-by-az");
 
@@ -86,6 +86,10 @@ deleteDeckBtn.addEventListener("click", () => {
     backToTop();
   }
 })
+
+
+
+
 
 //デッキ名変更イベント付与
 renameDeckBtn.addEventListener("click", renameDeck);
@@ -120,8 +124,9 @@ function showEditingDeck() {
   currentDeck = decks.find(deck => deck.id === currentDeckId);
 
   console.log(`currentDeckId is ${currentDeckId}`);
-  console.log(typeof currentDeckId)
-  console.log(`decks is ${decks}`);
+  console.log(decks.map(deck => deck.id));
+  console.log(decks.map(deck => typeof deck.id));
+  
   deckName.textContent = currentDeck.name;
 }
 
@@ -176,170 +181,266 @@ function renameDeck() {
 
 
 
+//==============
+//レンダー関数整理
+//==============
 
-//デッキ内カードを一覧表示する関数(各カードは['単語名', [phonetics], [meanings]]をもつ)
-function renderCard() {
-console.log("render実行");
-  cardContainer.innerHTML = "";//表示データの重複を防ぐために冒頭で毎回白紙化する
+//ローカルストレージのカード情報を取得して表示する
+function renderCards() {
+  cardContainer.innerHTML = "";
 
-  //cardsから当該デッキに属するカードのみを抽出し、ここを表示対象とする
   let deckCards = cards.filter(card => card.deckId === currentDeckId);
-
   if (sortMode === "az") {
     deckCards.sort((a, b) => a.word.localeCompare(b.word))
   }
-
-
+  
   //抽出したカードを一覧表示する、cardは複数のデータを有するオブジェクト
   deckCards.forEach((card, index) => {
+    const flashCard = createCardElement(card,index);
+    cardContainer.appendChild(flashCard.cardElement);    
+  })
 
-    const wordCard = document.createElement("div");//各カードの一番外側のdiv
-    wordCard.classList.add("word-card");//クラスを付与
-
-    //=====表示番号=====
-    const cardNum = document.createElement("p")
-    cardNum.textContent = "No. " + (index + 1);
-    wordCard.appendChild(cardNum);
+  //updateMeaningArrowState();
+}
 
 
-    //=====単語=====
-    const divWord = document.createElement("div");
-    divWord.classList.add("div-word");
-    divWord.classList.add("info-group");
+//デッキ情報を受け取り一枚のカードを作る。
+function createCardElement(card,index) {
+  let currentMeaningIndex = 0;
 
-    const wordValue = document.createElement("p");
-    wordValue.textContent = card.word;
-    wordValue.classList.add("word-title");
-    divWord.appendChild(wordValue);
-    wordCard.appendChild(divWord);
+  const cardElement = document.createElement("div");//各データ入れる一番外側のdiv
+  cardElement.classList.add("word-card");
+  
+  const cardNum = document.createElement("span");//各カードの表示番号
+  cardNum.textContent = "No. " + (index + 1);
+  cardNum.classList.add("card-num");
+  cardElement.appendChild(cardNum);
 
+  const title = createTitleArea(card);
+  cardElement.appendChild(title);
+  
+  const phonetic = createPhoneticArea(card);
+  cardElement.appendChild(phoneticArea);
+  
+  const navigation = createNavigationArea(card,currentMeaningIndex);
+  cardElement.appendChild(navigation.navigationArea);
 
-    //=====発音記号・発声ボタン=====
-    const divPhonetics = document.createElement("div");
-    divPhonetics.classList.add("info-group");
+  const definition = createDefinitionArea(card,currentMeaningIndex);
+  cardElement.appendChild(definition.definitionArea);
 
+  const cardActions = createCardActionsArea(card);
+  cardElement.appendChild(cardActions.cardActionsArea);
 
-    //音声ボタン
-    const phoneticArea = document.createElement("div");
-    phoneticArea.classList.add("info-label");
-    divPhonetics.appendChild(phoneticArea);
+   //currentMeaningIndexの値を増減する関数
+  function changeCurrentMeaningIndex(direction) {
+
+    console.log(currentMeaningIndex);
+    console.log(typeof currentMeaningIndex);
+    console.log(direction);
+    console.log(typeof direction);
+
+    currentMeaningIndex = currentMeaningIndex + direction;//ボタンに応じてindexを増減
+    console.log("changed currentMeaningIndex " + currentMeaningIndex);
+    //const definition = createDefinitionArea.update(card, currentMeaningIndex);
+    //indexが0より小さい場合、現在のindexを最終indexにする。
+    if (currentMeaningIndex < 0) {
+      currentMeaningIndex = card.meanings.length -1; 
+    }       
+    //indexがカードの枚数より大きい場合、現在のindexを0にする。
+    if (currentMeaningIndex > card.meanings.length -1) {
+      currentMeaningIndex = 0;   
+    }      
     
-    card.phonetics.forEach((phonetic, index) => {
-      if (!card.phonetics[index].text) return;//発音記号が無ければreturn
-      const audioBtn = document.createElement("button");
-      audioBtn.classList.add("audio-btn");
-      audioBtn.textContent = card.phonetics[index].text;
-      phoneticArea.appendChild(audioBtn);
+    updateCardElements();
+  }
+ 
+  function updateCardElements() {
+    navigation.update(currentMeaningIndex);
+    definition.update(currentMeaningIndex);
+  }
 
-      //ボタン上にオーディオイラストを併記
-      if (card.phonetics[index].audio === "") {
-        audioBtn.textContent += "🔇";
-      } else {
-        audioBtn.textContent += "🔊";
-      }      
-      
-      //音声ボタンの発声関数
-      audioBtn.addEventListener("click", () => {
-        const audio = new Audio(phonetic.audio);
-        if (!card.phonetics[index].audio) return;
-        audio.play();
-      })
+//◀▶ボタンにイベント付与
+  console.log("イベント登録");
+  console.log(navigation.prevMeaningBtn);
+  navigation.prevMeaningBtn.addEventListener("click", () => changeCurrentMeaningIndex(-1));
+  navigation.nextMeaningBtn.addEventListener("click", () => changeCurrentMeaningIndex(+1));
+  console.log("イベント登録終了");
+
+  updateCardElements()
+
+  return {cardElement, navigation, definition};
+  
+}
+
+//各カードの単語名を表示⇒domだけreturn
+function createTitleArea(card) {
+    
+  //親div:単語名
+  const titleArea = document.createElement("div");
+  titleArea.classList.add("info-group");
+  titleArea.classList.add("title-area")
+
+  const wordTitle = document.createElement("p");
+  wordTitle.textContent = card.word;
+  wordTitle.classList.add("word-title");
+  titleArea.appendChild(wordTitle);
+    
+  return titleArea;
+}
+
+//発音記号と発声マークを表示⇒domだけreturn
+function createPhoneticArea(card) {
+  
+  //=====発音記号・発声ボタンを定義====
+  const phoneticArea = document.createElement("div");
+  phoneticArea.classList.add("info-group");
+
+  //音声ボタン        
+  card.phonetics.forEach((phonetic, index) => {
+    if (!card.phonetics[index].text) return;//発音記号が無ければreturn
+    
+    const audioBtn = document.createElement("button");
+    audioBtn.classList.add("audio-btn");
+    audioBtn.textContent = card.phonetics[index].text;
+    phoneticArea.appendChild(audioBtn);
+
+    //ボタン上にオーディオイラストを併記
+    if (card.phonetics[index].audio === "") {
+      audioBtn.textContent += "🔇";
+    } else {
+      audioBtn.textContent += "🔊";
+    }      
+    
+    //音声ボタンの発声関数
+    audioBtn.addEventListener("click", () => {
+      const audio = new Audio(phonetic.audio);
+      if (!card.phonetics[index].audio) return;
+      audio.play();
     })
-    wordCard.appendChild(divPhonetics);
+    
+  })
+  return phoneticArea;
+}
+
+//品詞と◀▶ボタン、目次を作る⇒domと関数をreturn
+function createNavigationArea(card,currentMeaningIndex) {  
+
+  //親：品詞と◀▶ボタン、目次を包括するdiv
+  const navigationArea = document.createElement("div");
+  navigationArea.classList.add("info-group");
+
+  //品詞と◀▶ボタンを包括するdiv（目次は入れない）
+  const meaningNavigation = document.createElement("div");
+  meaningNavigation.classList.add("meaning-navigation");
+  navigationArea.appendChild(meaningNavigation);   
+
+  //◀：definition表示戻りボタン
+  const prevMeaningBtn = document.createElement("span");
+  prevMeaningBtn.classList.add("change-meaning-btn");
+  prevMeaningBtn.textContent = "◀";    
+  meaningNavigation.appendChild(prevMeaningBtn);
+
+  //品詞表示欄
+  let partOfSpeech = document.createElement("span");
+  partOfSpeech.classList.add("part-of-speech");
+  partOfSpeech.textContent = card.meanings[currentMeaningIndex].partOfSpeech;
+  meaningNavigation.appendChild(partOfSpeech);
+                  
+  //▶：definition表示送りボタン
+  const nextMeaningBtn = document.createElement("span");
+  nextMeaningBtn.classList.add("change-meaning-btn");
+  nextMeaningBtn.textContent = "▶";    
+  meaningNavigation.appendChild(nextMeaningBtn);
 
 
-    //=====英英訳=====
+  //品詞・意味表示の目次
+  const tableOfContents = document.createElement("div");
+  tableOfContents.classList.add("table-of-contents")
+  const totalPages = card.meanings.length;//総ページ数  
+  navigationArea.appendChild(tableOfContents);    
 
-    let  currentMeaningIndex = 0;//表示する品詞・definitionのindex番号
+     
 
-    //外側のdiv
-    const divMeanings = document.createElement("div");
-    divMeanings.classList.add("info-group");
-    wordCard.appendChild(divMeanings);
+  //状態変化を画面に反映する
+  function update(currentMeaningIndex) {
 
-    //品詞表示欄
-    const partOfSpeechZone = document.createElement("div");
-    partOfSpeechZone.classList.add("part-of-speech-zone");
-    let partOfSpeech = document.createElement("span");
-    partOfSpeech.classList.add("part-of-speech");
+    //品詞の表示をindexに従って更新
     partOfSpeech.textContent = card.meanings[currentMeaningIndex].partOfSpeech;
-    partOfSpeechZone.appendChild(partOfSpeech);
-    divMeanings.appendChild(partOfSpeechZone);
-           
-    //definition表示欄
-    const definitionArea = document.createElement("p");
-    definitionArea.classList.add("definition-area");
-    divMeanings.appendChild(definitionArea);
-
-    ////品詞ごとのdefinition全表示
-    card.meanings[currentMeaningIndex].definitions.forEach((definition,index) => {      
-      definitionArea.textContent += `${definition.definition} \n`;
-    })  
-
-    //definition-areaの開閉を行う
-    const toggleBtn = document.createElement("button");
-    toggleBtn.classList.add("toggle-btn");
-    let isExpanded = false;//definition-areaの開閉
-    toggleBtn.classList.add("toggle-btn");
-    toggleBtn.textContent = "More";
-    //必要用事領域>見えている領域の場合に、ボタンを追加する
-    if (definitionArea.scrollHeight > 300) {
-      definitionArea.style.height = "300px";      
-      divMeanings.appendChild(toggleBtn);
+    //目次をindexに従って更新
+    tableOfContents.textContent = `${currentMeaningIndex +1} / ${totalPages}`;
+  
+    //indexが0の場合にprevボタンを非アクティブ化、そうでなくなった場合にアクティブ化する
+    if (currentMeaningIndex === 0) {
+      prevMeaningBtn.classList.add("disabled-arrow");
+      
+    } else {
+      prevMeaningBtn.classList.remove("disabled-arrow");
     }
+    //indexが対象総数-1の場合にnextボタンを非アクティブ化、そうでなくなった場合にアクティブ化する
+    if (currentMeaningIndex === card.meanings.length -1) {
+      nextMeaningBtn.classList.add("disabled-arrow");
+      
+    } else {
+      nextMeaningBtn.classList.remove("disabled-arrow");
+    }
+  }
+  update(currentMeaningIndex);
+  
+  return {navigationArea, prevMeaningBtn, nextMeaningBtn, update};     
+}
+
+//definitionAreaのDOM作成と関連する関数の定義
+function createDefinitionArea(card,currentMeaningIndex) {
+  
+  //definition表示欄  
+  const definitionArea = document.createElement("div");
+  definitionArea.classList.add("info-group");
+  definitionArea.classList.add("definition-area");
+  //definitionを更新:指定indexのデータを表示する
+  function update(currentMeaningIndex) {
+    definitionArea.textContent = "";
+   
+    //definitionAreaの表示を更新する
+    card.meanings[currentMeaningIndex]
+      .definitions
+      .forEach((definition,index) => {  
+        const paragraph = document.createElement("p");
+        paragraph.classList.add("definition-paragraphs");
+        paragraph.textContent = definition.definition;
+        definitionArea.appendChild(paragraph);
+      })   
+  } 
+
+  update(currentMeaningIndex);
+
+  return {definitionArea, update};
+}
+
+
+function createCardActionsArea(card) {
+
+  const cardActionsArea = document.createElement("div");
+  cardActionsArea.classList.add("info-group");
+  cardActionsArea.classList.add("card-actions")
+
+  const editBtn = document.createElement("button");
+  editBtn.textContent = "🖋";
+  editBtn.dataset.action = "edit";
+  editBtn.dataset.cardId = card.id;
+  cardActionsArea.appendChild(editBtn);
+
+  const deleteBtn = document.createElement("button");
+  deleteBtn.textContent = "🗑";
+  deleteBtn.dataset.action = "delete";
+  deleteBtn.dataset.cardId = card.id;
+  cardActionsArea.appendChild(deleteBtn);
+  
+  return {cardActionsArea, editBtn, deleteBtn};
+}
+
+/*
     
-
-
-    const navigationDiv = document.createElement("div");
-    navigationDiv.classList.add("navigation-div");
-    divMeanings.appendChild(navigationDiv);
-
-
-    //definition表示戻りボタン
-    const prevMeaningBtn = document.createElement("button");
-    prevMeaningBtn.classList.add("change-meaning-btn");
-    prevMeaningBtn.textContent = "◀";    
-    navigationDiv.appendChild(prevMeaningBtn);
-
-
-    //目次：1/3みたいに今何ページ目かを表示する
-    const tableOfContents = document.createElement("div");
-    tableOfContents.classList.add("table-of-contents");
-    
-    const totalPages = card.meanings.length;
-    tableOfContents.textContent = `${currentMeaningIndex+1} / ${totalPages}`;
-    navigationDiv.appendChild(tableOfContents);
-
-    
-    //definition表示送りボタン
-    const nextMeaningBtn = document.createElement("button");
-    nextMeaningBtn.classList.add("change-meaning-btn");
-    nextMeaningBtn.textContent = "▶";    
-    navigationDiv.appendChild(nextMeaningBtn);
-    
-    
-    const cardActions = document.createElement("div");
-    cardActions.classList.add("card-actions");
-
-    const editBtn = document.createElement("button");
-    editBtn.textContent = "Edit";
-    editBtn.dataset.action = "edit";
-    editBtn.dataset.cardId = card.id;
-    cardActions.appendChild(editBtn);
-
-    const deleteBtn = document.createElement("button");
-    deleteBtn.textContent = "Delete";
-    deleteBtn.dataset.action = "delete";
-    deleteBtn.dataset.cardId = card.id;
-    cardActions.appendChild(deleteBtn);
-
-    wordCard.appendChild(cardActions);
-    cardContainer.appendChild(wordCard);
-
-
-    //renderCards内イベント・関数定義
-    
-    //toggleBtnイベント
+    //definitionArea開閉イベント　★★★
     toggleBtn.addEventListener("click", () => {
         definitionArea.classList.toggle("expanded");
       
@@ -350,54 +451,10 @@ console.log("render実行");
         }
     })
 
-    //definition戻りボタンイベント
-    prevMeaningBtn.addEventListener("click", () => {
-      currentMeaningIndex --;
-
-      //現在のindexが0未満なら、
-      if (currentMeaningIndex < 0) {
-        //現在のindexを最終indexにする
-        currentMeaningIndex = card.meanings.length -1;        
-      }                
-      updateMeaningDisplay();     
-      console.log("click prevMeaningBtn, currentMeaningIndex is " + currentMeaningIndex);      
-    });
-        
-
-    //definition進むイベント
-    nextMeaningBtn.addEventListener("click", () => {      
-      console.log("pushed nextMeaningBtn " + " currentMeaningIndex is " + currentMeaningIndex);
-      currentMeaningIndex ++;
-      //indexがカードの枚数より大きい場合、
-      if (currentMeaningIndex > card.meanings.length -1) {
-        currentMeaningIndex = 0;      
-        
-      }   
-      updateMeaningDisplay();
-    });
-      
-        
-    //目次更新イベント・関数
-    function updateMeaningDisplay() {
-
-      //partOfSpeechを再描画
-      partOfSpeech.textContent = card.meanings[currentMeaningIndex].partOfSpeech;
-
-      //definitionを再描画
-      definitionArea.textContent = "";
-      card.meanings[currentMeaningIndex].definitions.forEach((definition,index) => {
-      definitionArea.textContent += `${definition.definition} \n`;
-      });
-
-      //目次を描画
-      
-      tableOfContents.textContent = `${currentMeaningIndex+1} / ${totalPages}`;
-    }
+}//renderCards()ここまで
+*/
 
 
-  })
-
-}
 
 
 //========================
@@ -428,20 +485,6 @@ function searchWordData() {
   }
 }
 
-
-/*
-英英辞典先鋭化のため、削除
-日本語訳取得
-function fetchJapanese(word) {  
-  return fetch(`https://api.mymemory.translated.net/get?q=${word}&langpair=en|ja`)          
-  .then(response => response.json())
-  .then(data => {
-    console.log(data.responseData.translatedText);
-    const translatedData = data.responseData.translatedText;
-    return translatedData;
-   })  
-}
-*/
 
 //英英翻訳・発音取得⇒これらを配列にして返す
 function fetchDefinition(word) {
@@ -564,7 +607,7 @@ function addNewCard() {
   cards.push(newCard);
   saveData("flashcard_cards", cards);
   alert("New card added successfully.");
-  renderCard();
+  renderCardss();
   clearCardForm();
 }
 
@@ -580,7 +623,7 @@ cardContainer.addEventListener("click", (e) => {
   if (eventTarget.dataset.action === "delete") {
     deleteCard(eventTarget);
     saveData("flash_cards", cards);
-    renderCard();
+    renderCards();
   }
 
   //編集イベント：ターゲットにあるデータセットアクションの値がeditだった場合に以下の処理を行う
@@ -661,7 +704,7 @@ function updateCard() {
 
     //配列再読み込みと表示
     saveData("flashcard_cards", cards);
-    renderCard();
+    renderCards();
 
 
     //入力欄をクリア/editingCardIdをnullに戻す
@@ -677,7 +720,14 @@ function updateCard() {
   }
 }
 
-
+//下がったスクロールを初期位置に戻す
+function scrollTop() {
+  const scrollPosition = window.pageYOffset;  
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+}
 
 //並べ替え関数:状態を変えるだけ
 function sortCards() {
@@ -686,10 +736,16 @@ function sortCards() {
   } else {
     sortMode = null;
   }
-  renderCard();
+  renderCards();
 }
 
+window.addEventListener("scroll", ()=> {
+  if (window.scrollY > 100) {
+    scrollTopBtn.classList.remove("hidden");
+  } else scrollTopBtn.classList.add("hidden");
+});
 
+scrollTopBtn.addEventListener("click", scrollTop);
 
 // =================
 // STORAGE
@@ -720,11 +776,9 @@ function saveData(key, value) {
 
 
 document.addEventListener("DOMContentLoaded", () => {
-
   loadData(),
-    showEditingDeck();
-  renderCard();
-  console.log("cards contains", cards)
+  showEditingDeck();
+  renderCards();
 })
 
 

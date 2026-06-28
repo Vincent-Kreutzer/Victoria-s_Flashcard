@@ -85,7 +85,7 @@ function makeDeckCards() {
 
 
 //各タグにデータをいれ、表示する
-function renderCard() {    
+function renderCards() {    
   
   //表示用関数にカードを指定して入れる
   currentCard = deckCards[currentCardIndex];
@@ -146,7 +146,7 @@ function renderCard() {
   //矢印ボタンのアクティブ化・非アクティブ化
   updateArrowState();
 
-}//renderCard()ここまで
+}//renderCards()ここまで
 
 
 //スピーカーマークの発声関数
@@ -179,7 +179,7 @@ function flipCard() {
 //最初のカードに戻る
 function moveFirstCard() {
   currentCardIndex = 0;
-  renderCard();
+  renderCards();
 }
 
 //前のカードに戻る
@@ -187,7 +187,7 @@ function movePrevCard() {
   if (currentCardIndex === 0) return;
   currentMeaningIndex = 0;
   currentCardIndex --;
-  renderCard();
+  renderCards();
 }
 
 //次のカードに移る
@@ -195,13 +195,13 @@ function moveNextCard() {
   if (currentCardIndex === deckCards.length -1) return;
   currentMeaningIndex = 0;
   currentCardIndex ++;
-  renderCard();
+  renderCards();
 }
 
 //最後のカードに移る
 function moveLastCard() {
   currentCardIndex = deckCards.length -1;
-  renderCard();
+  renderCards();
 }
 
 //prev/nextボタン非アクティブ化の状態表示関数
@@ -249,7 +249,7 @@ prevMeaningBtn.addEventListener("click", (e) => {
   if (currentMeaningIndex === 0) return;//現在のindexが0ならreturn  
       
   currentMeaningIndex --;
-  renderCard();
+  renderCards();
   console.log("currentMeaningIndex is " + currentMeaningIndex);
 });
 
@@ -260,7 +260,7 @@ nextMeaningBtn.addEventListener("click", (e) => {
   //現在のインデックスが最終ならreturn
   if (currentMeaningIndex === currentCard.meanings.length-1) return;    
   currentMeaningIndex ++;
-  renderCard();
+  renderCards();
   console.log("currentMeaningIndex is " + currentMeaningIndex);
 });
 
@@ -298,7 +298,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadData();//ローカルストレージからカード情報取得  
   makeDeckCards();//全カードから選択中のデッキのカードのみ抽出
   displayDeckName();
-  renderCard();
+  renderCards();
 
 
 })

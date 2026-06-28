@@ -2,6 +2,17 @@
    EDIT PAGE
 ================= */
 
+
+body {
+  background-color:#252525;
+}
+
+#page-wrapper {
+  background:#faf7f2;
+  border-radius:24px;
+  padding:40px;
+}
+
 .page-title {  
   font-size: 28px;
   opacity: 0.88;
@@ -91,21 +102,33 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 24px;
   margin-bottom: 40px;
+  justify-items: center;
 }
 
 .word-card {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+  height: 75vh;
+  min-height: 600px;
   background: #fff;
   border: 1px solid #ececec;
   border-radius: 16px;
   padding: 22px;
-  box-shadow: 0 10px 24px rgba(0,0,0,0.06);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.18);
   transition: 0.25s ease;/*変化をゆっくり*/
-
+  aspect-ratio: 1000/1550;
+  background-image: url(images/background_img_vertical.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
 }
 
 .word-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 16px 28px rgba(0,0,0,0.10);
+ 
 }
 
 .info-group {
@@ -120,14 +143,11 @@
   margin-bottom: 4px;
 }
 
-.div-word {
+.title-area {
   display:flex;
   justify-content:center;
-}
-.card-word {
   margin: 0;
   color: #333;  
-  
 }
 
 .word-title {
@@ -136,78 +156,116 @@
   
 }
 
+.card-num {
+  position: absolute;
+  top:1.5rem;
+  left:2.5rem;
+  font-size:0.75rem;
+  opacity: 0.7;
+}
+
 .info-group .info-label,
-.part-of-speech-zone {
+.meaning-navigation {
   display: flex;
   justify-content: center;
+  gap:1rem;
 }
 
 .part-of-speech {
+  
   display: inline-block;
   padding: 0.3em 0.8em;
-  border-radius: 999px;
+  border-radius: 6px;
   font-weight: 700;
   font-size: 0.9rem;
-  background-color: #f0f4ff;
+  border: 2px solid #efe5c5;
+  background: transparent;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.table-of-contents {
+  position: absolute;
+  top: 3rem;
+  left: 2.5rem;
+  font-size: 0.75rem;
+  font-weight: normal;
+  color: #6b7280;
+  opacity: 0.75;
+  letter-spacing: 0.05em;
+  text-align: center;
 }
 
 .definition-area {
-  min-height: 16rem;
   line-height: 1.7;
   font-size: 1rem;
-  overflow: hidden;/*はみ出た部分は非表示*/
+
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 }
 
-.definition-area.expanded {
-  height: auto;
-}
-
-.toggle-btn {
-  text-align:right;
-}
-
-.info-group:first-of-type .card-word {
-  font-size: 1.35rem;
-}
 /*info: first-of-type⇒親要素の中で同じタグの最初の要素を指定する疑似クラス*/
 
-.info-group:nth-of-type(3) .card-word {
-  font-family: Georgia, serif;
-  line-height: 1.7;
-}
 /*info: nth-of-type⇒同じ親要素を持つ兄弟要素の中から、
 同じタグ名の要素だけを順番に数えて特定の位置にある要素を指定する疑似クラス*/
 
-.navigation-div {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-}
 
 .card-actions {
+  position: absolute;
+  top: 2rem;
+  right: 1.5rem;
   display: flex;
   gap: 10px;
   margin-top: 20px;
+  justify-content: flex-end;
 }
 
 .card-actions button {
-  flex: 1;
+  
   padding: 10px;
   border: none;
-  border-radius: 10px;
+  width:40px;
+  height: 40px;
+  flex: none;
+  border-radius: 50%;
+  padding: 0;
   cursor: pointer;
-  transition: 0.2s;
+  transition: 
+    color .2s ease,
+    transform .2s ease,
+    background-color .2s ease;
+}
+
+.card-actions button {
+  background: rgba(0,0,0,0.05);
 }
 
 .card-actions button[data-action="edit"] {
-  background: #2d2d2d;
-  color: white;
+  color: #555;
+}
+
+.card-actions button[data-action="edit"]:hover {
+  color: #c6a343;
+  transform: scale(1.15);
 }
 
 .card-actions button[data-action="delete"] {
-  background: #ececec;
-  color: #444;
+  color: #555;
+}
+
+.card-actions button[data-action="delete"]:hover {
+  color: #8b3a3a;
+  transform: scale(1.15);
+}
+.card-actions {
+  margin-top: auto;
+}
+
+.disabled-arrow {
+  color: #9ca3af;
+  opacity: 0.35;
+  transform: scale(0.95);
+  cursor: default;
 }
 
 
@@ -314,9 +372,7 @@
   line-height: 1.7;
 }
 
-.definition-area {
-  font-family: Geogia, serif;
-}
+
 
 #search-word-btn {
   margin-bottom: 18px;
@@ -365,6 +421,29 @@
   box-shadow: 0 8px 18px rgba(0,0,0,0.12);
 }
 
+#scroll-area {
+  display:flex;
+  align-items: center;
+}
+
+#scroll-top-btn {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+
+  width: 50px;
+  height: 50px;
+
+  border: none;
+  border-radius: 50%;
+
+  font-size:2rem;
+  color: white; 
+  background-color: rgba(0,0,0,0.5);
+  backdrop-filter: blur(5px);
+  
+ 
+}
 
 /* =================
    RENAME AREA
@@ -388,10 +467,11 @@
   background: #fafafa;
 }
 
-.navigation-div {
-  display: flex;
-  gap: 8px;
-}
+
+
+
+
+
 
 /* =================
    RESPONSIVE

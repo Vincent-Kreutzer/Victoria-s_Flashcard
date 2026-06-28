@@ -63,7 +63,7 @@ lastCardBtn.addEventListener("click", moveLastCard);
 
 
 //画面上に現在の一枚のカードのみを表示する
-function renderCard() {    
+function renderCards() {    
   //表示用関数にカードを指定して入れる
   currentCard = deckCards[currentCardIndex];
   //indexを元にカードを表示する
@@ -91,27 +91,27 @@ function makeDeckCards() {
 //最初のカードに戻る
 function moveFirstCard() {
   currentCardIndex = 0;
-  renderCard();
+  renderCards();
 }
 
 //前のカードに戻る
 function movePrevCard() {
   if (currentCardIndex === 0) return;
   currentCardIndex --;
-  renderCard();
+  renderCards();
 }
 
 //次のカードに移る
 function moveNextCard() {
   if (currentCardIndex === deckCards.length -1) return;
   currentCardIndex ++;
-  renderCard();
+  renderCards();
 }
 
 //最後のカードに移る
 function moveLastCard() {
  currentCardIndex = deckCards.length -1;
- renderCard();
+ renderCards();
 }
 
 
@@ -144,7 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadData();//ローカルストレージからカード情報取得  
   makeDeckCards();//全カードから選択中のデッキのカードのみ抽出
   displayDeckName();
-  renderCard();
+  renderCards();
 
 
 })

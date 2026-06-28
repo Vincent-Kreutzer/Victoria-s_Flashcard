@@ -197,7 +197,7 @@ function renderDeckList() {
   }
 }
 
-function renderCard() {}
+function renderCards() {}
 
 // =================
 // EDIT
