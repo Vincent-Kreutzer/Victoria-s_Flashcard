@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <title>Victoria's Flashcard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--<link rel="stylesheet" href="../common.css"> -->
+    <link rel="stylesheet" href="../css/top.css">
+  </head>
+  <body>
+    <main>
+      <div id="page-wrapper">
+        
+        <header id="top-header"><!--アプリ題名と副題を表示する箇所-->
+          <h1 id="page-title">Victoria's Flashcard App</h1>        
+          <p id="sub-title">Your personal language workspace</p>
+        </header>
+        
+        
+          <section id="word-search"><!--検索欄に入力してモーダルで結果を返す-->
+            <div id="search-form"><!--検索フォーム-->
+              <!--単語検索欄-->
+              <input type="text" id="search-input" placeholder="Input Word">
+              <button id="search-btn">Search</button><!--検索開始ボタン-->
+            </div><!--search-form-->          
+          </section><!--word-search-->
+
+          
+          <!--既存デッキ表示-->
+          <section id="decks-section">
+            
+            <div id="deck-toolbar">
+              <div id="addiction-toggle">
+                <h2 id="my-decks"><span id="arrow">▶ </span>My Decks</h2>
+              </div>                   
+              <button id="add-new-deck-btn"><!--デッキ作成モーダル開くボタン-->
+                <span class="plus">+</span> New Deck
+              </button>                    
+            </div>
+            
+            <div id="deck-panel" class="hidden"><!--既存デッキ表示欄-->         
+                            
+              <div id="deck-container">          
+                <div class="deck-card" data-deck-id="0">
+                  <h3 class="deck-name"></h3>
+                  <p class="words">Words:<span class="word-count"></span></p>
+                  <div class="card-btns">
+                    <button class="study-btn book-btns">study</button>
+                    <button class="edit-btn book-btns">edit</button>
+                  </div><!--card-btns-->         
+                </div><!--deck-card-->
+              </div><!--deck-container-->
+            </div><!--deck-panel-->
+
+          </section><!--decks-section-->     
+
+        
+      
+
+        <!-- 以下モーダル -->
+
+        <!--2種のモーダルを入れるDIV-->
+        <div id="modal-overlay" class="hidden">            
+
+          <!--検索した単語の表示モーダル-->
+          <section id="card-add-modal" class="hidden">        
+            <h2>Add Card to Deck</h2>
+
+            <div id="card-panel">                
+              
+              <!--単語名-->
+              <span id="searched-word"></span> 
+
+              <!--発音記号とオーディオボタン-->
+              <div id="phonetic-area"><span id="audio-btns"></span></div>
+
+              <!--品詞と品詞変更ボタン-->
+              <div class="info-group navigation-area">
+                
+                <div class="meaning-navigation">
+                  <span id="prev-meaning-btn" class="change-meaning-btn">◀</span>
+                  <span id="part-of-speech">Part of speech will appear here.</span>
+                  <span id="next-meaning-btn" class="change-meaning-btn">▶</span>                            
+                </div>
+                
+                <div id="table-of-contents"></div><!--目次を入れる-->  
+              </div><!--navigation-area-->
+
+              
+              <!--definitionエリア-->
+              <div id="modal-definition"></div>
+
+              <!--情報操作-->
+              <div id="info-control">
+                
+                <lavel id="select-lavel">Add to</lavel>
+                <!--デッキ選択セレクトボタン-->
+                <select id="select-deck"></select>
+                
+                <!--追加とキャンセルボタン-->
+                <div class="modal-btns">
+                  <button id="submit-card-btn" class="book-btns">Add</button><!--これが単語をデッキに追加するボタン-->
+                  <button id="close-search-card-btn" class="book-btns">Cancel</button>
+                </div><!--modal-btns--> 
+              </div><!--info-controll-->
+
+              
+            </div><!--card-panel-->      
+          </section><!--card-addiction-modal-->
+
+
+          <!--新規デッキ追加モーダル-->
+          <section id="deck-create-modal" class="hidden">
+            
+            <div id="book-panel" class="modal-content">
+              <h2>Create New Deck</h2>
+            
+              <input type="text" id="input-deckname" placeholder="Deck name">
+              <div class="modal-btns">
+                <button id="create-btn" class="book-btns">Create</button>
+                <button id="cancel-btn" class="book-btns">Cancel</button>   
+              </div>
+                  
+            </div><!--modal-content-->
+          </section>
+        
+        </div><!--modal-overlay-->
+      </div><!--page-wrapper-->
+      <script src="../js/top.js"></script>
+    </main>
+  </body>
+</html>

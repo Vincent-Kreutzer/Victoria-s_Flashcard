@@ -10,7 +10,7 @@ body {
   background:transparent;
   border-radius:24px;
   
-  background-image: url(images/library.png);
+  background-image: url(../images/library.png);
   backdrop-filter: blur(4px);
   background-size: contain;
   background-repeat: repeat;
@@ -21,7 +21,7 @@ body {
 
 #page-content {
 background: rgba(20,15,10,.15);
-  background-image: url(images/desk_without_book.png);
+  background-image: url(../images/desk_without_book.png);
   backdrop-filter: blur(4px);
   background-size: contain;
   background-repeat: no-repeat;
@@ -288,7 +288,7 @@ background: rgba(20,15,10,.15);
   box-shadow: 0 18px 40px rgba(0,0,0,0.18);
   transition: 0.25s ease;/*変化をゆっくり*/
   aspect-ratio: 1000/1550;
-  background-image: url(images/background_img_vertical.png);
+  background-image: url(../images/background_img_vertical.png);
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
@@ -456,7 +456,7 @@ background: rgba(20,15,10,.15);
   position: absolute;
   inset: 0;
 
-  background-image: url(images/library.png);
+  background-image: url(../images/library.png);
   background-size: cover;
   background-position: center;
 
@@ -478,7 +478,7 @@ background: rgba(20,15,10,.15);
   align-items: center;
   z-index: 1;
  
-  background-image: url(images/desk_with_book.png);
+  background-image: url(../images/desk_with_book.png);
   backdrop-filter: blur(4px);
   background-size: contain;
   background-repeat: no-repeat;

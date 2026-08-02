@@ -144,7 +144,7 @@ body {
 
 /*カード面表側*/
 #front-area { 
-  background-image: url(images/background_img_front.png);
+  background-image: url(../images/background_img_front.png);
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -154,7 +154,7 @@ body {
 
 /*カード面裏側*/
 #back-area {      
-  background-image: url(images/background_img_reverse.png);
+  background-image: url(../images/background_img_reverse.png);
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;

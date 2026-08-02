@@ -140,7 +140,7 @@ sortByAz.addEventListener("click", sortCards);
 
 //トップへ戻る関数
 function backToTop() {
-  location.href = "index.html";
+  location.href = "../html/top.html";
 }
 
 //デッキ名表示欄に編集中のデッキ名を表示する

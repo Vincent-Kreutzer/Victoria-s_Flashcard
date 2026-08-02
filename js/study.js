@@ -1,6 +1,3 @@
-/*index.htmlから渡されたdeckIdを元にして、
- 同名で用意した空の配列にデッキやカードを入れて使う。
-*/
 
 
 //===========================
@@ -63,7 +60,7 @@ const lastCardBtn = document.getElementById("last-card-btn");
 
 //トップに戻る関数
 function backToTop() {
-  location.href = "index.html";
+  location.href = "../html/top.html";
 }
 
 //デッキ名を取得して表示する
