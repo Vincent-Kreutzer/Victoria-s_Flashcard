@@ -4,50 +4,66 @@
     <title>Victoria's flashcard App</title>  
     <meta name="viewport" width="device-width, initial-scale=1.0">
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="../common.css">
+   <!--<link rel="stylesheet" href="../common.css">--> 
     <link rel="stylesheet" href="../study.css">
     </head>
 
   <body>
 
-    <div id="study-area"><!--body以下ページの最上位タグ-->
+    <div id="nav-bar"><!--画面内上部のナビゲーションdiv-->
+      <nav id="nav-menu">
+        <h3 id="deck-name"></h3>
+        <div id="card-counter"><!-- カードのインデックス / 総数--></div>
+        <button id="back-btn">Back to Top</button>
+      </nav>
+    </div><!--nav-bar-->
+    
+    <div id="study-area">
       
-      <div id="nav-bar"><!--画面内上部のナビゲーションdiv-->
-        <nav id="nav-menu">
-          <h3 id="deck-name"></h3>
-          <div id="card-counter"><!-- カードのインデックス / 総数--></div>
-          <button id="back-btn">Back to Top</button>
-        </nav>
-      </div>
-           
-      <div id="card-container"><!--カードを表示する枠-->
-       
+      <div id="pc-left-controls" class="control-container">
+        <button id="first-card-btn" class="controls">≪</button>
+        <button id="prev-card-btn" class="controls">＜</button>        
+      </div><!--pc-left-controls-->
+
+      <div id="card-container"><!--カードを表示する枠-->       
+
         <div id="card-display"><!-- カードを表示、ここをクリックで表示反転 -->
         
-          <div id="front-area">
+          <div id="front-area" class="card-face"> 
+            <div id="front-content" class="card-content">
               <span id="word"></span>
               <span id ="phonetics"></span>
-          </div>
+            </div><!--front-content-->  
+          </div><!--front-area-->
 
-          <div id="back-area" class="hidden">
-            <div id="meaning-navigation">
-              <span id="prev-meaning-btn" class="change-meaning-btn">◀</span>
-              <span id="part-of-speech"></span>
-              <span id="next-meaning-btn" class="change-meaning-btn">▶</span>              
-            </div>
-            <span id="meaning-page"><!--品詞・意味の現在のページ・総ページ数を表示--></span>
-            <p id="definitions"></p>           
-          </div>
+          <div id="back-area" class="card-face">
+            <div id="back-content" class="card-content">
+              <div id="meaning-navigation">
+                <span id="prev-meaning-btn" class="change-meaning-btn">◀</span>
+                <span id="part-of-speech"></span>
+                <span id="next-meaning-btn" class="change-meaning-btn">▶</span>              
+              </div><!--meaning-navigation-->
+              <span id="meaning-page"><!--品詞・意味の現在のページ・総ページ数を表示--></span>
+              <div id="definitions-wrapper" class="hide-fade">
+                <p id="definitions"></p> 
+              </div><!--definitions-wrapper-->
+                        
+            </div><!--back-content-->          
+          </div><!--back-area-->
+        </div><!--card-display-->
+    </div><!--study-area-->
 
-          
-        </div>
-      </div>
-      
-      <div id="controll-container">
-        <button id="first-card-btn" class="controlls">⏮</button>
-        <button id="prev-card-btn" class="controlls">◀</button>    
-        <button id="next-card-btn" class="controlls">▶</button>
-        <button id="last-card-btn" class="controlls">⏭</button>
+    <div id="pc-right-controls" class="control-container">          
+      <button id="next-card-btn" class="controls">＞</button>
+      <button id="last-card-btn" class="controls">≫</button>
+    </div><!--pc-right-controls-->
+
+
+      <div id="mobile-controls" class="control-container hidden">
+        <button id="first-card-btn" class="controls">≪</button>
+        <button id="prev-card-btn" class="controls">⟨</button>    
+        <button id="next-card-btn" class="controls"></button>⟩</button>
+        <button id="last-card-btn" class="controls">≫</button>
       </div>   
 
       </div>

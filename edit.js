@@ -6,6 +6,7 @@
 
 let decks = [];//ローカルストレージとデッキ情報のやり取りをする配列
 let latestSearchData = null;//最新の検索データを保持する変数
+
 //ローカルストレージからカード情報を受け取って入れる。最初は仮の初期データを格納
 let cards = [
   { id: 1, deckId: 0, word: "temporal", meaning: "仮" },
@@ -15,7 +16,7 @@ let cards = [
 
 let editingCardId = null; //編集カードのidを入れる
 let sortMode = null;//カード一覧の並び替えの切り替えに使う
-
+let modalMode = null;//モーダルを追加・編集のどちらで開いたかを判定する
 //カード一覧に表示するカードのデッキ情報
 let currentDeck = { id: 0, name: "sample-deck" };
 
@@ -24,13 +25,13 @@ const params = new URLSearchParams(location.search);
 const currentDeckId = Number(params.get("deck"));//渡されたデッキidを取得
 
 
-//デッキ削除ボタンDOM
-const deleteDeckBtn = document.getElementById("delete-deck");
-
-//バックボタンDOM
-const backBtn = document.getElementById("back-btn");
+//トップページ関係DOM
+const pageContent = document.getElementById("page-content");//モーダル以外を包括するdiv要素のDOM
+const deleteDeckBtn = document.getElementById("delete-deck");//デッキ削除ボタンDOM
+const backBtn = document.getElementById("back-btn");//バックボタンDOM
 
 //デッキ関係DOM
+
 const deckName = document.getElementById("deck-name");
 const renameDeckBtn = document.getElementById("rename-deck-btn");
 const renameDeckArea = document.getElementById("rename-deck-area");
@@ -44,12 +45,20 @@ const cardContainer = document.getElementById("card-container");
 
 //【新規カード追加関係DOM】
 const addCardBtn = document.getElementById("add-card-btn");
+const modalOverlay = document.getElementById("modal-overlay");
 const cardEditModal = document.getElementById("card-edit-modal");
 const cardEditArea = document.getElementById("card-edit-area");
 const searchWordBtn = document.getElementById("search-word-btn");//検索ボタン
 
 const wordInput = document.getElementById("word-input");
-const phoneticArea = document.getElementById("phonetic-area");
+const modalPhoneticArea = document.getElementById("modal-phonetic-area");
+
+const prevMeaningBtn = document.getElementById("prev-meaning-btn");
+const nextMeaningBtn = document.getElementById("next-meaning-btn");
+const partOfSpeech = document.getElementById("part-of-speech");
+let tableOfContents = document.getElementById("table-of-contents");
+ 
+
 const modalDefinitionArea = document.getElementById("modal-definition-area");
 
 const submitCardBtn = document.getElementById("submit-card-btn");//新規カード追加確定
@@ -89,14 +98,30 @@ deleteDeckBtn.addEventListener("click", () => {
 
 
 
-
-
 //デッキ名変更イベント付与
 renameDeckBtn.addEventListener("click", renameDeck);
 
-addCardBtn.addEventListener("click", toggleAddCardForm);
-cancelAddBtn.addEventListener("click", toggleAddCardForm);
+addCardBtn.addEventListener("click", () => {
+  modalMode = "add";
+
+
+  console.log("クリック時 =", modalMode);
+  openCardModal();
+});
+
+cancelAddBtn.addEventListener("click", () => {
+  modalMode = null;
+  closeCardModal();
+});
+  
+//デッキ名変更キャンセルイベントと関数
+cancelDeckRenameBtn.addEventListener("click", () => {
+  toggleRenameDeckArea();
+});
+
+
 submitCardBtn.addEventListener("click", addNewCard);
+
 updateCardBtn.addEventListener("click", updateCard);
 
 
@@ -189,6 +214,7 @@ function renameDeck() {
 function renderCards() {
   cardContainer.innerHTML = "";
 
+  //当該デッキのカードのみを抽出
   let deckCards = cards.filter(card => card.deckId === currentDeckId);
   if (sortMode === "az") {
     deckCards.sort((a, b) => a.word.localeCompare(b.word))
@@ -208,19 +234,26 @@ function renderCards() {
 function createCardElement(card,index) {
   let currentMeaningIndex = 0;
 
-  const cardElement = document.createElement("div");//各データ入れる一番外側のdiv
+  //各データ入れる一番外側のdiv
+  const cardElement = document.createElement("div");
   cardElement.classList.add("word-card");
-  
-  const cardNum = document.createElement("span");//各カードの表示番号
-  cardNum.textContent = "No. " + (index + 1);
-  cardNum.classList.add("card-num");
-  cardElement.appendChild(cardNum);
 
+  //各カードの表示番号を担当するdiv
+  const cardNum = document.createElement("span");
+  cardNum.textContent = "No. " + (index + 1);//表示するナンバー
+  cardNum.classList.add("card-num");//クラスリスト
+  cardElement.appendChild(cardNum);//親要素へ追加
+
+  //表示する単語名
   const title = createTitleArea(card);
-  cardElement.appendChild(title);
+  cardElement.appendChild(title);//親要素へ追加
   
+  //発音記号
+  console.log("表示中のcard =", card);
+console.log("card.phonetics =", card.phonetics);
+
   const phonetic = createPhoneticArea(card);
-  cardElement.appendChild(phoneticArea);
+  cardElement.appendChild(phonetic);//親要素へ追加
   
   const navigation = createNavigationArea(card,currentMeaningIndex);
   cardElement.appendChild(navigation.navigationArea);
@@ -231,13 +264,9 @@ function createCardElement(card,index) {
   const cardActions = createCardActionsArea(card);
   cardElement.appendChild(cardActions.cardActionsArea);
 
+
    //currentMeaningIndexの値を増減する関数
   function changeCurrentMeaningIndex(direction) {
-
-    console.log(currentMeaningIndex);
-    console.log(typeof currentMeaningIndex);
-    console.log(direction);
-    console.log(typeof direction);
 
     currentMeaningIndex = currentMeaningIndex + direction;//ボタンに応じてindexを増減
     console.log("changed currentMeaningIndex " + currentMeaningIndex);
@@ -252,20 +281,17 @@ function createCardElement(card,index) {
     }      
     
     updateCardElements();
-  }
- 
+  } 
+
   function updateCardElements() {
     navigation.update(currentMeaningIndex);
     definition.update(currentMeaningIndex);
   }
 
-//◀▶ボタンにイベント付与
-  console.log("イベント登録");
-  console.log(navigation.prevMeaningBtn);
+  //◀▶ボタンにイベント付与  
   navigation.prevMeaningBtn.addEventListener("click", () => changeCurrentMeaningIndex(-1));
   navigation.nextMeaningBtn.addEventListener("click", () => changeCurrentMeaningIndex(+1));
-  console.log("イベント登録終了");
-
+  
   updateCardElements()
 
   return {cardElement, navigation, definition};
@@ -277,9 +303,8 @@ function createTitleArea(card) {
     
   //親div:単語名
   const titleArea = document.createElement("div");
-  titleArea.classList.add("info-group");
-  titleArea.classList.add("title-area")
-
+  titleArea.classList.add("info-group", "title-area");
+  
   const wordTitle = document.createElement("p");
   wordTitle.textContent = card.word;
   wordTitle.classList.add("word-title");
@@ -293,7 +318,7 @@ function createPhoneticArea(card) {
   
   //=====発音記号・発声ボタンを定義====
   const phoneticArea = document.createElement("div");
-  phoneticArea.classList.add("info-group");
+  phoneticArea.classList.add("info-group", "phonetic-area");
 
   //音声ボタン        
   card.phonetics.forEach((phonetic, index) => {
@@ -355,7 +380,7 @@ function createNavigationArea(card,currentMeaningIndex) {
 
   //品詞・意味表示の目次
   const tableOfContents = document.createElement("div");
-  tableOfContents.classList.add("table-of-contents")
+  tableOfContents.classList.add("table-of-contents");
   const totalPages = card.meanings.length;//総ページ数  
   navigationArea.appendChild(tableOfContents);    
 
@@ -389,6 +414,7 @@ function createNavigationArea(card,currentMeaningIndex) {
   return {navigationArea, prevMeaningBtn, nextMeaningBtn, update};     
 }
 
+
 //definitionAreaのDOM作成と関連する関数の定義
 function createDefinitionArea(card,currentMeaningIndex) {
   
@@ -416,56 +442,46 @@ function createDefinitionArea(card,currentMeaningIndex) {
   return {definitionArea, update};
 }
 
-
+//編集・削除ボタンを作成する
 function createCardActionsArea(card) {
 
-  const cardActionsArea = document.createElement("div");
-  cardActionsArea.classList.add("info-group");
-  cardActionsArea.classList.add("card-actions")
-
+  const cardActionsArea = document.createElement("div");//一番外側のdiv
+  cardActionsArea.classList.add("info-group", "card-actions");//クラス付与
+ 
+  //editボタン作成
   const editBtn = document.createElement("button");
-  editBtn.textContent = "🖋";
-  editBtn.dataset.action = "edit";
-  editBtn.dataset.cardId = card.id;
-  cardActionsArea.appendChild(editBtn);
-
+  editBtn.textContent = "🖋";//表示
+  editBtn.dataset.action = "edit";//動作についてのデータ型  
+  editBtn.dataset.cardId = card.id;//カードのidについてのデータ型
+  editBtn.addEventListener("click", () => {
+    editingCardId = card.id;
+    modalMode = "edit";
+    openCardModal(card);
+  })
+  cardActionsArea.appendChild(editBtn);//親要素に追加
+  
+  //deleteボタン作成
   const deleteBtn = document.createElement("button");
-  deleteBtn.textContent = "🗑";
-  deleteBtn.dataset.action = "delete";
-  deleteBtn.dataset.cardId = card.id;
-  cardActionsArea.appendChild(deleteBtn);
+  deleteBtn.textContent = "🗑";//表示
+  deleteBtn.dataset.action = "delete";//動作についてのデータ型
+  deleteBtn.dataset.cardId = card.id;//カードのidについてのデータ型
+  cardActionsArea.appendChild(deleteBtn);//親要素に追加
   
   return {cardActionsArea, editBtn, deleteBtn};
 }
-
-/*
-    
-    //definitionArea開閉イベント　★★★
-    toggleBtn.addEventListener("click", () => {
-        definitionArea.classList.toggle("expanded");
-      
-        if (definitionArea.classList.contains("expanded")) {
-          toggleBtn.textContent = "Close";
-        } else {
-          toggleBtn.textContent = "More";
-        }
-    })
-
-}//renderCards()ここまで
-*/
 
 
 
 
 //========================
-//カード追加・編集モーダル
+//カード追加・編集モーダル用関数
 //========================
 
 
 //APIで単語情報を取得
 
 //単語検索実行関数
-function searchWordData() {
+function searchWordData(card = null) {
 
   //単語入力欄に値がある場合に、その値を渡してfetchを実行
   if (wordInput.value) {
@@ -473,18 +489,16 @@ function searchWordData() {
 
     //fetch関数実行
     fetchDefinition(searchWord)//引数を使ってAPI通信実行
-
+    
       //renderWordData()に、検索結果を渡して検索結果を表示
       .then(results => {
         renderWordData(results)
       })
-
   } else {
     alert("The word bar is empty.");
     return;
   }
 }
-
 
 //英英翻訳・発音取得⇒これらを配列にして返す
 function fetchDefinition(word) {
@@ -507,53 +521,123 @@ function fetchDefinition(word) {
 
 
 //検索結果から取得した単語情報を新規追加モーダルに表示する
-function renderWordData(definitionData, index) {
-  phoneticArea.innerHTML = "";
+function renderWordData(definitionData) {
+  modalPhoneticArea.innerHTML = "";
   modalDefinitionArea.innerHTML = "";
-  let [word, phonetics, definition] = definitionData;
+
+  let [word, phonetics, meanings] = definitionData;
 
   //各発音記号・音声の親div
-  const phoneticItem = document.createElement("div");
-  phoneticItem.classList.add("phonetic-item");
-  phoneticArea.appendChild(phoneticItem);
+  const phoneticItems = document.createElement("div");
+  phoneticItems.classList.add("phonetic-item");
+  modalPhoneticArea.appendChild(phoneticItems);
 
   //繰返し処理で発音記号と音声を取得する
   phonetics.forEach((phonetic, index) => {
 
     //発音記号付きオーディオボタン
     if (!phonetic.text) return;//発音記号が無ければreturn
+   
+    //ボタンDOM作成
     const audioBtn = document.createElement("button");
     audioBtn.classList.add("audio-btn");//ボタン作成
     audioBtn.textContent = phonetic.text;//ボタン上に発音記号を表示
 
-    //ボタン上にオーディオボタンを併記
+    //オーディオボタンの表示
     if (phonetic.audio === "") {
       audioBtn.textContent += "🔇";
     } else {
       audioBtn.textContent += "🔊";
     }
 
-    //音声イベント
+    //オーディオボタンの音声イベント定義
     audioBtn.addEventListener("click", () => {
       const audio = new Audio(phonetic.audio);
       if (!phonetic.audio) return;
       audio.play();
     })
 
-    phoneticArea.appendChild(audioBtn);
+    modalPhoneticArea.appendChild(audioBtn);
 
-  })//phonetics.forEach{}
+  })//phonetics.forEach   
 
-  //definitionの表示
-  let definitionArray = [];
-  definition.forEach((def, index) => {
-    definitionArray.push(`${index}. ${def.partOfSpeech}:\n`);
-    def.definitions.forEach(d => {
-      definitionArray.push(d.definition + "\n");
-    })
+  //品詞・definitionの表示
+  let currentMeaningIndex = 0;//表示する意味の所属番号
+  const totalPages = meanings.length;//意味の総ページ数
+  
+  //品詞の初期表示
+  partOfSpeech.textContent = meanings[currentMeaningIndex].partOfSpeech;
+
+  //definitionの初期表示
+  meanings[currentMeaningIndex].definitions.forEach((def) => {
+    const paragraph = document.createElement("p");
+    paragraph.textContent = def.definition;
+    modalDefinitionArea.appendChild(paragraph); 
   })
-  modalDefinitionArea.textContent += definitionArray.join("");
+  
+  //目次の初期表示
+    tableOfContents.textContent = `${currentMeaningIndex +1} / ${totalPages}`;
+  
+  
+  //currentMeaningIndexの値を変更する（バリデーションを含む）
+  function changeCurrentMeaningIndex(direction) {
 
+    currentMeaningIndex = currentMeaningIndex + direction;//ボタンに応じてindexを増減
+    //const definition = createDefinitionArea.update(card, currentMeaningIndex);
+    //indexが0より小さい場合、現在のindexを最終indexにする。
+    if (currentMeaningIndex < 0) {
+      currentMeaningIndex = meanings.length -1; 
+    }       
+    //indexがカードの枚数より大きい場合、現在のindexを0にする。
+    if (currentMeaningIndex > meanings.length -1) {
+      currentMeaningIndex = 0;   
+    }      
+
+    update(currentMeaningIndex);
+    
+  }//changeCurrentMeaningIndex()
+
+
+ //ボタン操作による品詞・definitionの表示変更
+  function update(currentMeaningIndex) {
+    modalDefinitionArea.innerHTML = "";
+    console.log(`update()push ${meanings[currentMeaningIndex].definitions}`);
+    
+    
+    //品詞の表示をindexに従って更新
+    partOfSpeech.textContent = meanings[currentMeaningIndex].partOfSpeech;
+    
+    //目次をindexに従って更新
+    tableOfContents.textContent = `${currentMeaningIndex +1} / ${totalPages}`;
+  
+    //definitionをindexに従って更新
+    meanings[currentMeaningIndex].definitions.forEach((def) => {
+    const paragraph = document.createElement("p");
+    paragraph.textContent = def.definition;
+    modalDefinitionArea.appendChild(paragraph); 
+    })
+
+    //indexが0の場合にprevボタンを非アクティブ化、そうでなくなった場合にアクティブ化する
+    if (currentMeaningIndex === 0) {
+      prevMeaningBtn.classList.add("disabled-arrow");
+      
+    } else {
+      prevMeaningBtn.classList.remove("disabled-arrow");
+    }
+
+    //indexが対象総数-1の場合にnextボタンを非アクティブ化、そうでなくなった場合にアクティブ化する
+    if (currentMeaningIndex === meanings.length -1) {
+      nextMeaningBtn.classList.add("disabled-arrow");
+      
+    } else {
+      nextMeaningBtn.classList.remove("disabled-arrow");
+    }
+  }//update()
+
+
+  prevMeaningBtn.addEventListener("click", () => changeCurrentMeaningIndex(-1));
+  nextMeaningBtn.addEventListener("click", () => changeCurrentMeaningIndex(+1));
+    
 }//renderWordData()
 
 
@@ -570,13 +654,45 @@ function renderDeckOptions() {
 }
 
 //新規入力フォームの開閉を行う
-function toggleAddCardForm() {
-  cardEditModal.classList.toggle("hidden");
+function openCardModal(targetCard) {
+  
+//新規追加、編集で共通の窓口を設ける
+  //新規追加なら入力欄は空、編集なら編集単語を入力欄に入れてモーダル表示
+  if (modalMode === "add") {
+    wordInput.value = "";
+    submitCardBtn.classList.remove("hidden");
+    updateCardBtn.classList.add("hidden");
+    console.log(updateCardBtn.classList.contains("hidden"));
+  } 
+
+  if (modalMode === "edit") {    
+    wordInput.value = targetCard.word;
+    submitCardBtn.classList.add("hidden");
+    updateCardBtn.classList.remove("hidden");
+    searchWordData();
+  }
+
+  modalOverlay.classList.remove("hidden");
+  cardEditModal.classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+}
+
+//モーダルを閉じる関数
+function closeCardModal() {
+  modalMode = "";
+  clearCardForm();
+
+  modalOverlay.classList.add("hidden");
+  cardEditModal.classList.add("hidden");
+  pageContent.classList.remove("hidden");
+  document.body.style.overflow = "auto";
 }
 
 //入力欄を空にする関数
 function clearCardForm() {
-  phoneticArea.innerHTML = "";
+  wordInput.value = "";
+  modalPhoneticArea.innerHTML = "";
+  partOfSpeech.innerHTML = "";
   modalDefinitionArea.innerHTML = "";
 }
 
@@ -607,30 +723,16 @@ function addNewCard() {
   cards.push(newCard);
   saveData("flashcard_cards", cards);
   alert("New card added successfully.");
-  renderCardss();
+  renderCards();
   clearCardForm();
+
+  addCardBtn.classList.remove("hidden");
+  submitCardBtn.classList.remove("hidden");
+  updateCardBtn.classList.add("hidden");
 }
 
 
-//カード削除・編集イベント:親要素にイベント付与
-cardContainer.addEventListener("click", (e) => {
-  //イベントが起こった子要素取得
-  const eventTarget = e.target.closest("[data-card-id]");
 
-  if (!eventTarget) return;//変数に値が無ければその先に進んでエラーになるのを防ぐ
-
-  //削除イベント：ターゲットにあるデータセットアクションの値がdeleteだった場合に以下の処理を行う
-  if (eventTarget.dataset.action === "delete") {
-    deleteCard(eventTarget);
-    saveData("flash_cards", cards);
-    renderCards();
-  }
-
-  //編集イベント：ターゲットにあるデータセットアクションの値がeditだった場合に以下の処理を行う
-  if (eventTarget.dataset.action === "edit") {
-    startEdit(eventTarget);
-  }
-});
 
 //APIに音声ファイルが存在するかを確認する関数
 function checkAudioExists(word) {
@@ -663,6 +765,11 @@ function startEdit(eventTarget) {
   //編集ボタン押す⇒ボタンのカスタムデータと対応するidのカードを取得
 
   console.log(cards);
+  //新規追加系ボタンを隠してupdateボタンを表示する
+  addCardBtn.classList.add("hidden");
+  submitCardBtn.classList.add("hidden");
+
+  updateCardBtn.classList.remove("hidden");
 
   const targetData = cards.find(card => card.id === Number(eventTarget.dataset.cardId));
 
@@ -670,53 +777,65 @@ function startEdit(eventTarget) {
   cardEditModal.classList.remove("hidden");
   wordInput.value = targetData.word;
 
-  definitionInput.value = targetData.definition;
-  meaningInput.value = targetData.meaning;
+  modalDefinitionArea.value = targetData.definition;
+  modalMeaning.value = targetData.meaning;
   editingCardId = targetData.id;
-
-  //新規追加系ボタンを隠してupdateボタンを表示する
-  addCardBtn.classList.add("hidden");
-  submitCardBtn.classList.add("hidden");
-  updateCardBtn.classList.remove("hidden");
-
+  
   //入力欄にカーソル合わせる
   wordInput.focus();
 }
 
 
-//カード編集を完了する関数：updateボタンを押した挙動
+//モーダル画面でカード更新を完了する関数：updateボタンを押した挙動
 function updateCard() {
+  
+  console.log(editingCardId);
+  console.log("updateCard開始");
+  
+  //操作中のカードがある場合にのみ処理を続行
   if (editingCardId !== null) {
 
-    //editingCardIdの値を元に、該当データを取得
+    //editingCardIdの値を元に、編集対象データ（古いデータ）を取得
     const targetData = cards.find(card => card.id === Number(editingCardId));
 
-    //入力欄の値を取得
-    const name = wordInput.value;
-    const meaning = meaningInput.value;
+    //更新用カード情報をオブジェクトとして取得。データはAPIから取得したもの。
+    const newCard = {
+      id: editingCardId,
+      deckId: currentDeckId,
+      word: latestSearchData[0],
+      phonetics: latestSearchData[1],
+      meanings: latestSearchData[2]
+    };
 
-    //ローカルストレージに上書きする
-    targetData.word = name;
-    targetData.meaning = meaning;
+    //情報の更新処理をする
+    targetData.word = latestSearchData[0];
+    targetData.phonetics = latestSearchData[1];
+    targetData.meanings = latestSearchData[2];
+
+
+    //ローカルストレージに変更を保存
+    saveData("flashcard_cards", cards);
 
     //更新完了のメッセージ表示
     alert("Card updated successfully");
 
-    //配列再読み込みと表示
-    saveData("flashcard_cards", cards);
+    //配列再読み込みと表示    
     renderCards();
-
 
     //入力欄をクリア/editingCardIdをnullに戻す
     clearCardForm();
     editingCardId = null;
-
+    
+    
     //ボタンをupdateからaddに戻す
-    updateCardBtn.classList.add("hidden");
-    submitCardBtn.classList.remove("hidden");
-    addCardBtn.classList.remove("hidden");
+    updateCardBtn.classList.add("hidden");//更新確定ボタンhidden付与
+
+    submitCardBtn.classList.remove("hidden");//追加確定ボタンhidden除去
+
     //入力欄を隠す
-    cardEditArea.classList.add("hidden");
+    modalOverlay.classList.add("hidden");
+    cardEditModal.classList.add("hidden");
+    pageContent.classList.remove("hidden");
   }
 }
 
@@ -739,13 +858,43 @@ function sortCards() {
   renderCards();
 }
 
-window.addEventListener("scroll", ()=> {
-  if (window.scrollY > 100) {
-    scrollTopBtn.classList.remove("hidden");
-  } else scrollTopBtn.classList.add("hidden");
+
+
+//edit.htmlトップにカード一覧を表示するイベント
+cardContainer.addEventListener("click", (e) => {
+ 
+  const eventTarget = e.target.closest("[data-card-id]");//イベントが起こった子要素取得
+
+  if (!eventTarget) return;//変数に値が無ければその先に進んでエラーになるのを防ぐ
+
+  //削除イベント：ターゲットにあるデータセットアクションの値がdeleteだった場合に以下の処理を行う
+  if (eventTarget.dataset.action === "delete") {
+    deleteCard(eventTarget);
+    saveData("flash_cards", cards);//ローカルストレージに保存
+    renderCards();//変更後のデータを再表示
+  }
+
+  //編集イベント：ターゲットにあるデータセットアクションの値がeditだった場合に以下の処理を行う
+  if (eventTarget.dataset.action === "edit") {    
+    
+     const targetCard = cards.find((card) => {
+      return card.id === Number(eventTarget.dataset.cardId);      
+    });
+    console.log(targetCard)
+    modalMode = "edit";
+    openCardModal(targetCard);
+  }
 });
 
 scrollTopBtn.addEventListener("click", scrollTop);
+
+window.addEventListener("scroll", () => {
+  if (window.scrollY > 100) {
+    scrollTopBtn.classList.remove("hidden");
+  } else {
+    scrollTopBtn.classList.add("hidden");
+  }
+});
 
 // =================
 // STORAGE

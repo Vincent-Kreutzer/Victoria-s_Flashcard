@@ -46,6 +46,7 @@ const prevMeaningBtn = document.getElementById("prev-meaning-btn");
 const nextMeaningBtn = document.getElementById("next-meaning-btn");
 const meaningPage = document.getElementById("meaning-page");
 let definitions = document.getElementById("definitions");
+const wrapper = document.getElementById("definitions-wrapper");
 
 let currentMeaningIndex = 0;//現在表示中のmeaningsのインデックス
 
@@ -80,9 +81,6 @@ function makeDeckCards() {
     return;
   }
 }
-
-
-
 
 //各タグにデータをいれ、表示する
 function renderCards() {    
@@ -145,9 +143,25 @@ function renderCards() {
 
   //矢印ボタンのアクティブ化・非アクティブ化
   updateArrowState();
+  updateDefinitionFade();
 
 }//renderCards()ここまで
 
+definitions.addEventListener("scroll", updateDefinitionFade);
+
+function updateDefinitionFade() {
+  const needScroll = definitions.scrollHeight > definitions.clientHeight; 
+
+  const isBottom = 
+  definitions.scrollTop + definitions.clientHeight >= 
+  definitions.scrollHeight - 1;
+
+  if (!needScroll || isBottom) {    
+    wrapper.classList.add("hide-fade");
+  } else {
+    wrapper.classList.remove("hide-fade");
+  }
+};
 
 //スピーカーマークの発声関数
 function playAudio(url) {
@@ -157,24 +171,16 @@ function playAudio(url) {
 
 //カードの裏表の表示を切り替える
 function flipCard() {  
-
+  console.log("clicked");
   isFront = !isFront;//カードの反転を行う
+  console.log(isFront);
   //初期値としてmeanings[0]の品詞とdefinitionを表示する
   if (isFront) {
-    frontArea.classList.remove("hidden");
-    backArea.classList.add("hidden");  
-    console.log(frontArea.className);
+    cardDisplay.classList.remove("flipped");
   } else {
-    frontArea.classList.add("hidden");
-    backArea.classList.remove("hidden"); 
-    
-   
-   
+    cardDisplay.classList.add("flipped");
   }
 }
-
-
-
 
 //最初のカードに戻る
 function moveFirstCard() {
@@ -237,8 +243,6 @@ function updateArrowState() {
     lastCardBtn.classList.remove("disabled-arrow");
   }
 }
-
-
 
 
 backBtn.addEventListener("click", backToTop);

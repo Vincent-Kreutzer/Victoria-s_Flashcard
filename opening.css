@@ -1,0 +1,146 @@
+* {
+  box-sizing: border-box;
+}
+
+html, 
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background: #17110d;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+  "Hiragino Kaku Gothic ProN", "Noto Sans JP",
+  Meiryo, sans-serif;
+  line-height: 1.6;
+  background-color: #2b1f16;
+}
+
+/*画面全体の土台部分*/
+#page-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;  
+  height: 100vh;
+  margin: 0 auto;  
+  padding: 24px 16px;
+
+  
+  background-color: transparent;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  background-image: url(../images/top_page_horizon.png);
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+#top-header {
+  position: absolute;
+  top: 2.5rem;
+  left: 3rem;
+
+  padding: 1rem 2rem 1rem 1.5rem;
+  
+}
+
+#top-header h1 {
+  margin: 0;
+}
+
+#top-header p {
+  margin-top: 0.4rem;
+}
+
+#page-title {
+  
+  font-family: 'Great Vibes', cursive;
+  font-size: 2.5rem;
+  color: #E2B96F; 
+  margin: 0;
+  margin-left: 2rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-shadow:
+    0 2px 2px rgba(0, 0, 0, 0.95),
+    1px 0 2px rgba(0, 0, 0, 0.8),
+    -1px 0 2px rgba(0, 0, 0, 0.8);
+}
+
+#sub-title {
+  font-family: Georgia, serif;
+  font-size: 14px;
+  letter-spacing: 2px;
+
+  margin: 0;
+  margin-left: 4rem;
+  font-style: italic;
+  color: #C89A52;
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 1),
+    1px 0 2px rgba(0, 0, 0, 0.9),
+    -1px 0 2px rgba(0, 0, 0, 0.9);
+  
+}
+
+
+
+#opening-actions {
+  position: absolute;
+  top: 70%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  gap: 0.25rem;
+}
+
+#opening-message,
+#opening-label {
+  font-family: 'Great Vibes', cursive;
+  font-size: 18px;
+  color: black;
+  margin: 0;
+  padding: 0;
+ 
+  letter-spacing: .04em;
+  text-shadow:
+  0 2px 4px rgba(0,0,0,.45);
+}
+
+#start-btn {
+  margin-top: 0.6rem;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.9rem;
+
+  color: #F5EED8;                 /* アイボリー */
+  background: rgba(60, 40, 25, .75);
+  border: 1px solid rgba(212, 175, 55, 0.55);
+  border-radius: 8px;
+
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: all 0.25s ease;
+    
+  color: #fff7e8;
+  box-shadow:0 3px 8px rgba(0,0,0,.3);
+}
+
+#start-btn:hover {
+  background: rgba(110,75,45,0.95);
+  border-color: #D4AF37;
+  color: #FFF8E8;
+
+}
+

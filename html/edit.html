@@ -4,79 +4,115 @@
     <title>Victoria's flashcard App</title>  
     <meta name="viewport" width="device-width, initial-scale=1.0">
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="../common.css">
+    
     <link rel="stylesheet" href="../edit.css">
   </head>
   <body>
 
     <div id="page-wrapper">
 
-      <div id="header">
+      <div id="page-content"><!--モーダル以外を包括する-->
 
-        <div id="title-area">
-          <h1 class="page-title">Victoria's Flashcard App</h1>
-          <div class="title-line"></div>
-          <h3 id="deck-name"></h3>
-        </div>        
+        <div id="header">
+          <div id="title-area">
+            <h1 id="page-title">Victoria's Flashcard App</h1>
+            <div class="title-line"></div>
+            <h3 id="deck-name"></h3>
+          </div>        
 
-          <!--操作メニュー-->
-        <div id="header-actions">        
-          <button id="add-card-btn">+ New Card</button>
-          <button id="sort-by-az">Sort A-Z</button>
-          <button id="rename-deck-btn">✎ Rename Deck</button>
-          <button id="back-btn">⇐ Back</button>
-          <button id="delete-deck">🗑️ Delete Deck</button>
-        </div>
+            <!--操作メニュー-->
+          <div id="header-actions">        
+            <button id="add-card-btn">✦ New Card</button>
+            <button id="sort-by-az">⇅ Sort A-Z</button>
+            <button id="rename-deck-btn">✎ Rename Deck</button>
+            <button id="back-btn">⇐ Back</button>
+            <button id="delete-deck">🗑️ Delete Deck</button>
+          </div><!--header-actions-->
 
           <!--デッキの名前変更モーダル-->
-        <div id="rename-deck-area" class="hidden">
-          <input type="text" id="input-deckname" placeholder="deck name">
-          <button id="confirm-deckrename-btn">submit</button>
-          <button id="cancel-deckrename-btn">cancel</button>
-        </div>  
+          <div id="rename-deck-area" class="hidden">
+            <div id="rename-title">
+              <span>Rename Deck</span>
+            </div>
 
-      </div><!--header-->
-             
-      <!--カード表示欄、内容はrender関数で作成-->
-      <div id="card-container">
-        <!--カード表示欄-->
-      </div>
-      
-      <div id="scroll-area">
-        <button id="scroll-top-btn">⇧</button>
-      </div>
+            <div id="rename-deck-btns">
+              <input type="text" id="input-deckname" placeholder="deck name">
+              <button id="confirm-deckrename-btn">submit</button>
+              <button id="cancel-deckrename-btn">cancel</button>
+            </div>
+            
+          </div><!--rename-deck-area-->
 
-      <!--新規単語カード作成モーダル-->
-      <div id="card-edit-modal" class="hidden">
+        </div><!--header-->              
 
-        <div id="card-edit-area" class="modal-panel">
+        <!--カード表示欄、内容はrender関数で作成-->
+        <div id="card-container"><!--カード表示欄--></div>       
+              
+        
 
-          <!--モーダルタイトル-->
-          <h2 class="modal-title">Card Editor</h2>
+      </div><!--page-content-->
 
-          <!--単語検索ボタン-->
-          <div class="word-search-row">
-            <input type="text" id="word-input" placeholder="Word">
-            <button id="search-word-btn">search</button>
-          </div>
+      <div id="modal-overlay" class="hidden">
+        
 
+        <!--新規単語カード作成モーダル-->
+        <div id="card-edit-modal" class="hidden">
 
-          <!--発音記号とオーディオボタン-->
-          <div id="phonetic-area"></div>
+          <div id="card-panel" class="modal-panel">
 
-          <textarea id="modal-definition-area" placeholder="Definition"></textarea>
+            <div id="modal-header">
+              <!--モーダルタイトル-->
+              <h2 class="modal-title">Card Editor</h2>
 
-          <div class="modal-btns">
-            <button id="submit-card-btn">Add</button>
-            <button id="update-card-btn" class="hidden">Update</button><!--編集時にOnにする-->
-            <button id="cancel-add-btn">Cancel</button>
-          </div>       
-         
-        </div>
-      </div>
-    </div>
+              <!--単語検索ボタン-->
+              <div id="word-search-row" class="info-group title-area">
+                <input type="text" id="word-input" class="word-title" placeholder="Word">
+                <button id="search-word-btn">search</button>
+              </div><!--word-search-row-->
+            </div><!--modal-header-->
 
+            <div id="modal-body">
+              <!--発音記号とオーディオボタン-->
+              <div id="modal-phonetic-area" class="info-group phonetic-area"></div>
+
+              <!--品詞と品詞変更ボタン-->
+              <div class="info-group navigation-area">
+                <div class="meaning-navigation">
+                  <span id="prev-meaning-btn" class="change-meaning-btn">◀</span>
+                  <span id="part-of-speech">Part of speech will appear here.</span>
+                  <span id="next-meaning-btn" class="change-meaning-btn">▶</span>                            
+                </div>
+                
+                <div id="table-of-contents"></div><!--目次を入れる-->   
+
+              </div><!--navigation-area-->
+
+              <!--definitionエリア-->
+              <div id="modal-definition-area" class="info-group definition-area">
+                Search for an English word.<br>
+                Its definition will appear here.
+              </div>
+
+            </div><!--modal-body-->  
+
+            <!--追加、更新、キャンセルボタン-->
+            <div id="modal-btns">
+              <button id="submit-card-btn">Add</button>
+              <button id="update-card-btn" class="hidden">Update</button><!--編集時にOnにする-->
+              <button id="cancel-add-btn">Cancel</button>
+            </div>   <!--modal-btns-->    
+          
+          </div><!--card-panel-->        
+        
+        </div><!--card-edit-modal-->
     
+      </div><!--modal-overlay-->
+      
+    </div><!--page-wrapper-->
+
+    <div id="scroll-area">
+          <button id="scroll-top-btn" class="hidden">⇧</button>
+    </div>
 
     <script src="../edit.js"></script>
   </body>

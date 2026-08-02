@@ -18,21 +18,6 @@ let defaultCards = [
 //mapでidを抽出して入れる変数
 let someIds = [];
 
-// =================
-// STATE
-// =================
-
-const SCREEN = {
- 
-}
-
-const TEST = {
-  
-}
-
-let state = {
-  
-}
 
 // =================
 // DOM取得
@@ -42,29 +27,28 @@ const pageWrapper = document.getElementById("page-wrapper");
 
 //検索欄
 const searchInput = document.getElementById("search-input");
-const searchBtn = document.getElementById("search-btn");
-const addNewCardBtn = document.getElementById("add-new-card-btn");
+const searchBtn = document.getElementById("search-btn");//検索欄横の検索を実行するボタン
 
-//検索結果表示欄
-const searchResult = document.getElementById("search-result");
-const enPhonetic = document.getElementById("en-phonetic");
-const enDefinition = document.getElementById("en-definition");
-const jpTranslation = document.getElementById("jp-translation");
-
-
-//検索した単語を表示・追加するモーダル
+//検索結果を表示するモーダル
 const modalOverlay = document.getElementById("modal-overlay");
 const cardAddModal = document.getElementById("card-add-modal");
 const addictionToggle = document.getElementById("addiction-toggle");
 
-const inputWord = document.getElementById("input-word");
-const inputDefinition = document.getElementById("input-definition");
-const inputMeaning = document.getElementById("input-meaning");
-const inputPhonetic = document.getElementById("input-phonetic")
-const selectedDeck = document.getElementById("select-deck");
+const searchResult = document.getElementById("search-result");
+const searchedWord = document.getElementById("searched-word")
+const phonetic = document.getElementById("phonetic-area");
+const audioBtns = document.getElementById("audio-btns");
 
-const submitCardBtn = document.getElementById("submit-card-btn");
-const closeCardAddModalBtn = document.getElementById("close-card-add-modal-btn");
+const prevMeaningBtn = document.getElementById("prev-meaning-btn")
+const partOfSpeech = document.getElementById("part-of-speech");
+const nextMeaningBtn = document.getElementById("next-meaning-btn")
+const tableOfContents = document.getElementById("table-of-contents")
+
+const modalDefinition = document.getElementById("modal-definition");
+  
+const selectedDeck = document.getElementById("select-deck");
+const submitCardBtn = document.getElementById("submit-card-btn");/*入力した単語情報をデッキに追加するボタン*/
+const closeCardAddBtn = document.getElementById("close-search-card-btn");
 
 
 //デッキ操作
@@ -75,11 +59,11 @@ const deckPanel = document.getElementById("deck-panel");
 const addNewDeckBtn = document.getElementById("add-new-deck-btn");//新規デッキ追加ボタン
 const deckContainer = document.getElementById("deck-container");//デッキカード保管場所
 
-const inputDeckName = document.getElementById("input-deckname");
+const inputDeckName = document.getElementById("input-deckname");//デッキ名入力箇所
 
 const deckCreateModal = document.getElementById("deck-create-modal");
-const cancelBtn = document.getElementById("cancel-btn");
-const createBtn = document.getElementById("create-btn");
+const cancelBtn = document.getElementById("cancel-btn");//デッキ作成モーダルを閉じるボタン
+const createBtn = document.getElementById("create-btn");//新しくデッキを追加するボタン
 
 
 // =================
@@ -90,11 +74,8 @@ const createBtn = document.getElementById("create-btn");
 //検索欄の値を取得⇒APIで検索
 searchBtn.addEventListener("click", () => searchWordData());
 
-//カード追加モーダルを開く
-addNewCardBtn.addEventListener("click", addNewCard);
-
 //カード追加モーダルを閉じる
-closeCardAddModalBtn.addEventListener("click", closeCardAddModal);
+closeCardAddBtn.addEventListener("click", closeCardAddModal);
 
 //検索データのデッキ編の追加
 submitCardBtn.addEventListener("click", submitNewCard);
@@ -110,39 +91,245 @@ myDecks.addEventListener("click", toggleDeckPanel);
 //デッキ作成モーダルを開く
 addNewDeckBtn.addEventListener("click", openDeckCreateModal);
 
+//デッキ作成モーダルを閉じる
 cancelBtn.addEventListener("click", closeDeckCreateModal);
 
 createBtn.addEventListener("click", () => createDeck(inputDeckName.value));
 
 
-//カード追加モーダルを開く（まだデッキに追加しない）関数
-function addNewCard() {
-  modalOverlay.classList.remove("hidden");
-  cardAddModal.classList.remove("hidden");
-  pageWrapper.classList.add("hidden");
+// =================
+// 検索関係
+// =================
+
+
+//入力欄の単語を検索する関数
+function searchWordData() {
+
+  //単語入力欄に値がある場合に、その値を渡してfetchを実行
+  if (searchInput.value) {
+    const searchWord = searchInput.value.trim();
+
+    //fetch関数実行
+    fetchDefinition(searchWord)//引数を使ってAPI通信実行  
+      //renderWordData()に、検索結果を渡して検索結果を表示
+      .then(results => {
+        currentWordData = results;
+        
+        renderWordData(results);
+        openCardAddModal(results);
+      })
+      
+      .catch((error) => {
+        console.log(error);
+        alert("Could not retrieve the word. Please try again.")
+      })
+
+    } else {
+      alert("The search bar is empty.");
+      return;
+    }   
+}
+  
+ 
+//APIからデータ取得
+function fetchDefinition(word) {
+  const url =
+    `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`;
+  
+  console.log("検索語:", word);
+  console.log("アクセス先:", url);
+
+  return fetch(url)
+    .then(response => {
+      console.log("status:", response.status);
+      
+      if (!response.ok) {
+        throw new Error(`Word not found: ${response.status}`);
+      }
+            
+      return response.json();
+    })
+
+    .then(data => {  
+      console.log("fetchDefinition = ", data)
+      //APIから取得したデータのうち、使えるものをざっくり取り出す。
+      const definitionData = [
+        data[0].word,//検索した単語
+        data[0].phonetics,//発音記号と音声データ(あれば）
+        data[0].meanings //意味、同意語、反意語
+      ];
+      console.log("definitionData includes = ", definitionData);   
+      return definitionData;
+    })  
 }
 
 
-//検索した単語データを取得してモーダルの各欄に入れる関数
-function getCardData() {
 
+function renderWordData(apiData) {
+  audioBtns.innerHTML = ""
+  partOfSpeech.innerHTML = "";
+  modalDefinition.innerHTML = "";
+  let [word, phonetics, meanings] = apiData;
+
+  searchedWord.textContent = word;
+
+  //繰返し処理で発音記号と音声を取得する
+  phonetics.forEach((phonetic, index) => {
+
+    //発音記号付きオーディオボタン
+    if (!phonetic.text) return;//発音記号が無ければreturn
+
+    const audioBtn = document.createElement("button");
+    audioBtn.classList.add("audio-btn");//ボタン作成
+    audioBtn.textContent = phonetic.text;//ボタン上に発音記号を表示
+    audioBtns.appendChild(audioBtn);
+
+    //ボタン上にオーディオボタンを併記
+    if (phonetic.audio === "") {
+      audioBtn.textContent += "🔇";
+    } else {
+      audioBtn.textContent += "🔊";
+    }
+
+    //音声イベント
+    audioBtn.addEventListener("click", () => {
+      if (!phonetic.audio) return;
+
+      const audio = new Audio(phonetic.audio);
+      
+      audio.play().catch((error) => {
+        console.error("再生できない音声URL:", phonetic.audio, error);
+        audioBtn.textContent = `${phonetic.text} 🔇`;
+      })
+      audio.play();
+    });
+    
+  })//phonetics.forEach{}
+
+
+  //品詞と表示変更ボタン
+  //品詞・definitionの表示
+  let currentMeaningIndex = 0;//表示する意味の所属番号
+  const totalPages = meanings.length;//意味の総ページ数
+  
+  //品詞の初期表示
+  partOfSpeech.textContent = meanings[currentMeaningIndex].partOfSpeech;
+
+  //definitionの初期表示
+  meanings[currentMeaningIndex].definitions.forEach((def) => {
+    const paragraph = document.createElement("p");
+    paragraph.textContent = def.definition;
+    modalDefinition.appendChild(paragraph); 
+  })
+  
+  //目次の初期表示
+    tableOfContents.textContent = `${currentMeaningIndex +1} / ${totalPages}`;
+  
+  
+  //currentMeaningIndexの値を変更する（バリデーションを含む）
+  function changeCurrentMeaningIndex(direction) {
+
+    currentMeaningIndex = currentMeaningIndex + direction;//ボタンに応じてindexを増減
+    //const definition = createDefinitionArea.update(card, currentMeaningIndex);
+    //indexが0より小さい場合、現在のindexを最終indexにする。
+    if (currentMeaningIndex < 0) {
+      currentMeaningIndex = meanings.length -1; 
+    }       
+    //indexがカードの枚数より大きい場合、現在のindexを0にする。
+    if (currentMeaningIndex > meanings.length -1) {
+      currentMeaningIndex = 0;   
+    }      
+
+    update(currentMeaningIndex);
+  }//changeCurrentMeaningIndex()
+
+  //ボタン操作による品詞・definitionの表示変更
+  function update(currentMeaningIndex) {
+    modalDefinition.innerHTML = "";
+    console.log(`update()push ${meanings[currentMeaningIndex].definitions}`);
+    
+    
+    //品詞の表示をindexに従って更新
+    partOfSpeech.textContent = meanings[currentMeaningIndex].partOfSpeech;
+    
+    //目次をindexに従って更新
+    tableOfContents.textContent = `${currentMeaningIndex +1} / ${totalPages}`;
+  
+    //definitionをindexに従って更新
+    meanings[currentMeaningIndex].definitions.forEach((def) => {
+    const paragraph = document.createElement("p");
+    paragraph.textContent = def.definition;
+    modalDefinition.appendChild(paragraph); 
+    })
+
+    //indexが0の場合にprevボタンを非アクティブ化、そうでなくなった場合にアクティブ化する
+    if (currentMeaningIndex === 0) {
+      prevMeaningBtn.classList.add("disabled-arrow");
+      
+    } else {
+      prevMeaningBtn.classList.remove("disabled-arrow");
+    }
+
+    //indexが対象総数-1の場合にnextボタンを非アクティブ化、そうでなくなった場合にアクティブ化する
+    if (currentMeaningIndex === meanings.length -1) {
+      nextMeaningBtn.classList.add("disabled-arrow");
+      
+    } else {
+      nextMeaningBtn.classList.remove("disabled-arrow");
+    }
+  }//update()
+
+
+  prevMeaningBtn.addEventListener("click", () => changeCurrentMeaningIndex(-1));
+  nextMeaningBtn.addEventListener("click", () => changeCurrentMeaningIndex(+1));
+    
+
+  //meanings(品詞と意味)の表示
+  meanings.forEach((meaning) => {
+    partOfSpeech.textContent = meaning.partOfSpeech;
+    
+    meaning.definitions.forEach(def => {
+      const pDefinition = document.createElement("p");
+      pDefinition.textContent = def.definition;
+      modalDefinition.appendChild(pDefinition);
+    })    
+  })
+}//renderWordData()
+
+
+// =================
+// カード追加モーダル
+// =================
+
+
+//単語追加関係➊
+//カード追加モーダルを開く（まだデッキに追加しない）関数
+function openCardAddModal() {
+  modalOverlay.classList.remove("hidden");
   cardAddModal.classList.remove("hidden");
-  pageWrapper.classList.add("hidden");
-  
-  const word = inputWord.value.trim();//単語データ
-  const phonetic = inputPhonetic.value.trim();//発音記号
-  const definition = inputDefinition.value.trim();//英英訳
-  const meaning = inputMeaning.value.trim();//和訳
-  
-  const cardData = {"word": word, "phonetic": phonetic, "definition":definition,  "meaning": meaning,}
+
+  deckCreateModal.classList.add("hidden");
+}
+
+
+//単語追加関係➋
+//検索した単語データを取得
+function getCardData(definitionData) {
+    
+  const cardData = {
+    "word": definitionData[0],
+    "phonetics": definitionData[1],
+    "meanings":definitionData[2]
+  }
   return cardData;
 }
 
-  
-//検索した単語をモーダルからデッキに加える
-function submitNewCard(data){ 
 
-  const cardData = getCardData();//検索した単語データを受け取る
+//単語追加関係➌
+//検索した単語をデッキに加える
+function submitNewCard(){ 
+
+  const cardData = getCardData(currentWordData);//検索した単語データを受け取る
   const targetDeck = Number(selectedDeck.value);//挿入先デッキのidを取得    
   const cardId = cards.length ? Math.max(...cards.map(card => card.id)) +1 : 0;    
   const newCard = {"id": cardId, "deckId" : targetDeck, ...cardData};
@@ -160,104 +347,32 @@ function submitNewCard(data){
 
 }
 
+
+//単語追加関係➍
 //カード追加モーダル空白にする関数
 function clearCardAddModal() {
-  inputWord.value = "";//単語データ
-  inputPhonetic.value = "";//発音記号
-  inputDefinition.value = "";//英英訳
-  inputMeaning.value = "";//意味
+  searchedWord.value = "";//単語データ
+  phonetic.textContent = "";
+  partOfSpeech.textContent = "";  
+  tableOfContents.textContent = "";
+  modalDefinition.textContent = "";//英英訳
 }
-
-
 
 //単語追加モーダルを閉じる
 function closeCardAddModal() {
   modalOverlay.classList.add("hidden");
   cardAddModal.classList.add("hidden");
-  pageWrapper.classList.remove("hidden");
-  
+
+  clearCardAddModal();
 }
 
 
-//単語検索実行関数
-function searchWordData() {
-    enPhonetic.textContent = "";
-    jpTranslation.textContent  = "";
-    enDefinition.textContent = "";
-    
-    //検索欄に値がある場合に、
-    if (searchInput.value) {
-      const searchWord = searchInput.value.trim();
-      inputWord.value = searchWord;
-
-      //APIから情報取得、結果をまとめて受け取る形
-      Promise([        
-        fetchDefinition(searchWord)
-      ])
-        .then(results => {
-          renderWordData(results[0],results[1])  
-        })
-      
-
-      addNewCardBtn.classList.remove("hidden");//デッキに追加ボタン表示
-      searchResult.classList.remove("hidden");//検索結果表示欄表示      
-    } else {
-      alert("The search bar is empty.");
-     return;
-    }   
-}
-
-/*
-英英辞典先鋭化のため、削除
-//日本語訳取得
-function fetchJapanese(word) {  
-  return fetch(`https://api.mymemory.translated.net/get?q=${word}&langpair=en|ja`)          
-  .then(response => response.json())
-  .then(data => {
-    console.log(data.responseData.translatedText);
-    const translatedData = data.responseData.translatedText;
-    return translatedData;
-   })  
-}
-*/
- 
-//英英翻訳・品詞・発音取得
-function fetchDefinition(word) {
-  return fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`)
-    .then(response =>  response.json())
-    .then(data => {  
-       //APIから取得したデータのうち、使えるものをざっくり取り出す。
-      const definitionData = [
-        data[0].word,//検索した単語
-        data[0].phonetics,//発音記号と音声データ(あれば）
-        data[0].meanings //意味、同意語、反意語
-      ];
-      console.log("definitionData includes = ", definitionData);   
-      return definitionData;
-    })  
-  }
+// =================
+// デッキ関係
+// =================
 
 
-//DOM更新
-function renderWordData(translatedData, definitionData) {
-  
-    jpTranslation.textContent = translatedData;//検索結果の日本語訳表示欄に入れる
-    inputMeaning.value = jpTranslation.textContent;//モーダルの日本語訳表示欄に入れる
-      
-    enPhonetic.textContent = definitionData[0];
-    inputPhonetic.value = enPhonetic.textContent;
-
-    enDefinition.textContent = definitionData[1];         
-    inputDefinition.value = enDefinition.textContent; 
-}
-
-
-
-//モーダル欄更新
-
-function fillCardModal(data) {}
-
-//セレクトタグにデッキを表示する
+//新規カード追加モーダル内セレクトタグにデッキを表示する（追加先デッキを選択するため）
 function renderDeckOptions() {
   //ローカルストレージからデッキ情報を取得して、デッキ数だけオプションタグを増やす。
   const decks = JSON.parse(localStorage.getItem("flashcard_decks"));
@@ -267,10 +382,11 @@ function renderDeckOptions() {
     optionTag.textContent = deck.name;
     selectedDeck.appendChild(optionTag);   
   })
+  
 }
 
 
-
+//デッキ一覧の▶の表示非表示を切り替える
 function toggleDeckPanel() {
   deckPanel.classList.toggle("hidden");
   if (!deckPanel.classList.contains("hidden")) {
@@ -280,26 +396,23 @@ function toggleDeckPanel() {
   }
 }
 
-//【+New Deckボタンを押すことでデッキ名入力欄を出現させる。】
+
+//【デッキ作成モーダルを表示する。】
 function openDeckCreateModal() {  
-  pageWrapper.classList.add("hidden");
   modalOverlay.classList.remove("hidden");
-  deckCreateModal.classList.remove("hidden");
-  
+  deckCreateModal.classList.remove("hidden");  
+
+  cardAddModal.classList.add("hidden");
   inputDeckName.focus();
+
+  console.log(cardAddModal.className)
 }
 
-//デッキ追加モーダルを閉じる
-function closeDeckCreateModal() {
-  modalOverlay.classList.add("hidden");
-  deckCreateModal.classList.add("hidden");
-  pageWrapper.classList.remove("hidden");
-}
 
 //【デッキ作成関数】
 function createDeck(name) {
-  console.log(name);
-  console.log(typeof name);
+  
+  console.log("Create Deck Btn Clicked");
   //decksに値が一つでもあればsomeIdsにidを抽出して入れる。
   if (decks.length) {    
     //存在するidを抜き出して配列に入れる。
@@ -309,6 +422,7 @@ function createDeck(name) {
   }
   //既存デッキのidの値の最も大きい数値+1を新デッキのidとする
   const newDeck = {id : Math.max(...someIds) +1, name : name, }
+  
   decks.push(newDeck);
   console.log(newDeck);  
   saveData("flashcard_decks", decks);
@@ -316,8 +430,12 @@ function createDeck(name) {
   closeDeckCreateModal();
 }
 
-
-
+//デッキ追加モーダルを閉じる
+function closeDeckCreateModal() {
+  console.log("cancel btn clicked")
+  modalOverlay.classList.add("hidden");
+  deckCreateModal.classList.add("hidden");  
+}
 
 // =================
 // STORAGE
@@ -355,7 +473,7 @@ function renderDeckList() {
             
       //deckCard
       const deckCard = document.createElement("div");    
-      deckCard.classList.add("deck-card");
+      deckCard.classList.add("deck-card");      
       deckCard.dataset.deckId = deck.id;//ローカルストレージに保存されているid
       
       //deck名
@@ -383,7 +501,8 @@ function renderDeckList() {
 
       //学習ボタン
       const studyBtn = document.createElement("button");
-      studyBtn.textContent = "Study";
+      studyBtn.textContent = "Open";
+      studyBtn.classList.add("book-btns");
       studyBtn.addEventListener("click", ()=> {
         location.href = `study.html?deck=${deck.id}`; 
       })
@@ -392,6 +511,7 @@ function renderDeckList() {
       //編集ボタン
       const editBtn = document.createElement("button");
       editBtn.textContent = "Edit";
+      editBtn.classList.add("book-btns")
       editBtn.addEventListener("click", () => {
         location.href = `edit.html?deck=${deck.id}`;
       })
@@ -452,23 +572,6 @@ function renderDeckList() {
   }
 }
 
-function renderCards() {}
-
-// =================
-// EDIT
-// =================
-
-
-function updateCard() {}
-function deleteCard() {}
-
-// =================
-// STUDY
-// =================
-
-function nextCard() {}
-function prevCard() {}
-function flipCard() {}
 
 
 // =================
