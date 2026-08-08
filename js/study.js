@@ -161,9 +161,15 @@ function updateDefinitionFade() {
 };
 
 //スピーカーマークの発声関数
-function playAudio(url) {
-  audioBtn = new Audio(url);  
-  audioBtn.play();
+async function playAudio(url) {
+  const audio = new Audio(url);
+
+  try {
+    await audio.play();
+  } catch (error) {
+    console.error("Audio playback failed:", error);
+    alert("Audio is temporarily unavailable.");
+  }  
 }
 
 //カードの裏表の表示を切り替える
@@ -299,6 +305,12 @@ document.addEventListener("DOMContentLoaded", () => {
   loadData();//ローカルストレージからカード情報取得  
   makeDeckCards();//全カードから選択中のデッキのカードのみ抽出
   displayDeckName();
+  if (deckCards.length === 0) {
+    alert("This deck has no cards yet.");
+    location.href = "../html/top.html";
+    return;
+  }
+  
   renderCards();
 
 

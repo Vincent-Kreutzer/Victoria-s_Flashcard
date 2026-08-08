@@ -489,7 +489,7 @@ async function searchWordData() {
     const definitionData = await fetchDefinition(searchWord);
 
     //検索結果を保存
-    currentWordData = definitionData;
+    latestSearchData = definitionData;
     
     //検索成功後、結果を描画
     renderWordData(definitionData);
@@ -544,7 +544,7 @@ async function fetchDefinition(word) {
           data[0].meanings ?? []
         ];
 
-        currentWordData = definitionData;
+        latestSearchData = definitionData;
 
         return definitionData;
       } catch (error) {
@@ -764,12 +764,12 @@ function addNewCard() {
     alert("Please enter a word first");
     return;
   }
+console.log("latest search data is", latestSearchData);
 
   //新規カード情報をオブジェクトとして取得。データはAPIから取得したもの。
   const newCard = {
     id: newId,
-    deckId: currentDeckId,
-
+    deckId: currentDeckId,    
     word: latestSearchData[0],
     phonetics: latestSearchData[1],
     meanings: latestSearchData[2]

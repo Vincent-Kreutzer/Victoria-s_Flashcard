@@ -4,7 +4,7 @@
 
 let decks = []
 let cards = []
-let currentWordData = null;//fetchで取得したデータを保存⇒各変数に割り当てる
+let latestSearchWord = null;//fetchで取得したデータを保存⇒各変数に割り当てる
 let defaultDeck = [
   {id:0, name:"sample-deck"},  
 ]
@@ -116,6 +116,8 @@ console.log(cardAddModal.classList);
   try {
     const definitionData = await fetchDefinition(searchWord);
 
+    //
+    latestSearchWord = definitionData;
     //検索成功後の処理
     renderWordData(definitionData);
 
@@ -173,7 +175,7 @@ async function fetchDefinition(word) {
         data[0].meanings //意味、同意語、反意語
       ];
 
-      currentWordDataData = definitionData;
+      latestSearchWord = definitionData;
       return definitionData;
     } catch (error) {
       lastError = error;
@@ -231,9 +233,10 @@ function renderWordData(apiData) {
       
       try {
         await audio.play();
-      } catch {
+      } catch(error) {
         console.error("Audio playback failed:", error);
-        alert("Audio is temporarily unavailable.");
+        alert("Audio is temporarily unavailable.");        
+        audioBtn.textContent = "🔇";
       }      
     });
     
@@ -362,7 +365,7 @@ function getCardData(definitionData) {
 //検索した単語をデッキに加える
 function submitNewCard(){ 
 
-  const cardData = getCardData(currentWordData);//検索した単語データを受け取る
+  const cardData = getCardData(latestSearchWord);//検索した単語データを受け取る
   const targetDeck = Number(selectedDeck.value);//挿入先デッキのidを取得    
   const cardId = cards.length ? Math.max(...cards.map(card => card.id)) +1 : 0;    
   const newCard = {"id": cardId, "deckId" : targetDeck, ...cardData};
@@ -536,7 +539,14 @@ function renderDeckList() {
       const studyBtn = document.createElement("button");
       studyBtn.textContent = "Open";
       studyBtn.classList.add("book-btns");
+
+      //カードがあるか調べて、なければ学習ページを開かない
+      const deckCards = cards.filter(card => card.deckId === deck.id);     
       studyBtn.addEventListener("click", ()=> {
+        if (deckCards.length === 0) {
+          alert("This deck has no cards yet.");
+          return;
+        }      
         location.href = `study.html?deck=${deck.id}`; 
       })
       cardBtns.appendChild(studyBtn);
@@ -585,7 +595,13 @@ function renderDeckList() {
 
         //学習ページリンク
         const studyBtn = document.createElement("button");
-        studyBtn.textContent = "Study";
+        studyBtn.textContent = "Open";   
+         //カードがあるか調べて、なければ学習ページを開かない
+        const deckCards = cards.filter(card => card.deckId === deckId);     
+        if (deckCards.length === 0) {
+        alert("This deck has no cards yet.");
+        return;
+      }     
         studyBtn.addEventListener("click", ()=> {
           location.href = `study.html?deck=${deck.id}`;            
         })

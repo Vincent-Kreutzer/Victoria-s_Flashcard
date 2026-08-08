@@ -58,7 +58,7 @@ body {
 
 /*ページタイトル*/
 #page-title {
-  text-align: left;
+  text-align: center;
   font-family: 'Great Vibes', cursive;
   font-size: 1.5rem;
   color: #E2B96F; 
@@ -671,7 +671,9 @@ transform: translateY(1px);
     flex-direction: column;
     text-align: center;
     justify-content: center;
+    margin-top: 1.5rem;
     margin-bottom: 2rem;
+    
   }
 
   #page-title,
