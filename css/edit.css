@@ -371,7 +371,8 @@ background: rgba(20,15,10,.15);
 .definition-area {
   line-height: 1.7;
   font-size: 1rem;
-  padding-left: 1rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
   flex: 1;
   overflow-y: auto;
   width: 100%;

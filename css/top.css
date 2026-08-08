@@ -738,7 +738,7 @@ transform: translateY(1px);
     background-blend-mode: multiply;
   }
 
-  #book-panel,
+  
   #card-panel {
     width: 100%;
     max-width: none;
@@ -746,7 +746,16 @@ transform: translateY(1px);
     padding: 1.25rem;
   }
 
+  #book-panel {
+    width: 90%;
+    height: 70vh;
+    max-height: 42rem;
+    padding: 1.25rem;
 
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
 
   #input-deckname,
   #select-deck {
@@ -781,8 +790,6 @@ transform: translateY(1px);
  .hidden {
   display: none;
  }
-
-
 
 
 }

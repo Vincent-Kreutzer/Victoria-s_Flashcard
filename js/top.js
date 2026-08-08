@@ -77,11 +77,8 @@ let defaultCards = [
   }
 ];
 
-
-
 //mapでidを抽出して入れる変数
 let someIds = [];
-
 
 // =================
 // DOM取得
@@ -259,7 +256,6 @@ async function fetchDefinition(word) {
 
   throw lastError;
 }
-
 
 
 function renderWordData(apiData) {
@@ -604,15 +600,19 @@ function renderDeckList() {
       studyBtn.textContent = "Open";
       studyBtn.classList.add("book-btns");
 
-      //カードがあるか調べて、なければ学習ページを開かない
-      const deckCards = cards.filter(card => card.deckId === deck.id);     
+      //カードがあるか調べて、なければ学習ページを開かない          
       studyBtn.addEventListener("click", ()=> {
+        
+        const deckCards = cards.filter(card => card.deckId === deck.id); 
+        
         if (deckCards.length === 0) {
           alert("This deck has no cards yet.");
           return;
         }      
+
         location.href = `study.html?deck=${deck.id}`; 
       })
+
       cardBtns.appendChild(studyBtn);
 
       //編集ボタン
@@ -660,15 +660,20 @@ function renderDeckList() {
         //学習ページリンク
         const studyBtn = document.createElement("button");
         studyBtn.textContent = "Open";   
-         //カードがあるか調べて、なければ学習ページを開かない
-        const deckCards = cards.filter(card => card.deckId === deckId);     
-        if (deckCards.length === 0) {
-        alert("This deck has no cards yet.");
-        return;
-      }     
+        //カードがあるか調べて、なければ学習ページを開かない
+        
+          
         studyBtn.addEventListener("click", ()=> {
+          
+          const deckCards = cards.filter(card => card.deckId === deckId);     
+          if (deckCards.length === 0) {
+          alert("This deck has no cards yet.");
+          return;
+                    
           location.href = `study.html?deck=${deck.id}`;            
-        })
+          }
+        });
+
         deckCard.appendChild(studyBtn);
 
         //編集ページリンク
