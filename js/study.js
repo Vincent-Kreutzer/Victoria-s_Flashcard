@@ -86,6 +86,22 @@ function renderCards() {
   currentCard = deckCards[currentCardIndex];
   console.log("currentCard contains " + currentCard);
 
+  const debug = document.createElement("pre");
+
+debug.style.position = "fixed";
+debug.style.bottom = "0";
+debug.style.left = "0";
+debug.style.right = "0";
+debug.style.maxHeight = "40vh";
+debug.style.overflow = "auto";
+debug.style.background = "black";
+debug.style.color = "lime";
+debug.style.zIndex = "99999";
+debug.style.fontSize = "12px";
+
+debug.textContent = JSON.stringify(currentCard, null, 2);
+
+document.body.appendChild(debug);
   //各表示欄を初期化
   word.textContent = "";
   
