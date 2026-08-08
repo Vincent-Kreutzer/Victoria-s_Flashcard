@@ -103,64 +103,95 @@ createBtn.addEventListener("click", () => createDeck(inputDeckName.value));
 
 
 //入力欄の単語を検索する関数
-function searchWordData() {
+async function searchWordData() {
+  const searchWord = searchInput.value.trim();
+  console.log(modalOverlay.classList);
+console.log(deckCreateModal.classList);
+console.log(cardAddModal.classList);
+  if (!searchWord) {
+    alert("The search bar is empty.");
+    return;
+  }
 
-  //単語入力欄に値がある場合に、その値を渡してfetchを実行
-  if (searchInput.value) {
-    const searchWord = searchInput.value.trim();
+  try {
+    const definitionData = await fetchDefinition(searchWord);
 
-    //fetch関数実行
-    fetchDefinition(searchWord)//引数を使ってAPI通信実行  
-      //renderWordData()に、検索結果を渡して検索結果を表示
-      .then(results => {
-        currentWordData = results;
-        
-        renderWordData(results);
-        openCardAddModal(results);
-      })
-      
-      .catch((error) => {
-        console.log(error);
-        alert("Could not retrieve the word. Please try again.")
-      })
+    //検索成功後の処理
+    renderWordData(definitionData);
 
-    } else {
-      alert("The search bar is empty.");
+    //検索結果を描画
+    renderWordData(definitionData);
+
+    //カード追加モーダルを開く
+    openCardAddModal();
+
+  } catch(error) {
+    console.error("Word search failed:", error);
+
+    if (error.message === "WORD_NOT_FOUND") {
+    alert("The word was not found in the dictionary.");
+    return;
+    }
+
+    if (error.message.startsWith("API_ERROR_")) {
+      alert("The dictionary service returned an error.");
       return;
-    }   
+    }
+
+    alert("Could not connect to the dictionary service.");
+  } 
 }
   
+function wait(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
  
 //APIからデータ取得
-function fetchDefinition(word) {
+async function fetchDefinition(word) {
   const url =
     `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`;
   
-  console.log("検索語:", word);
-  console.log("アクセス先:", url);
+  let lastError;
 
-  return fetch(url)
-    .then(response => {
-      console.log("status:", response.status);
-      
-      if (!response.ok) {
-        throw new Error(`Word not found: ${response.status}`);
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+      const response = await fetch(url);
+
+      if (response.status === 404) {
+        throw new Error("WORD_NOT_FOUND");
       }
-            
-      return response.json();
-    })
 
-    .then(data => {  
-      console.log("fetchDefinition = ", data)
-      //APIから取得したデータのうち、使えるものをざっくり取り出す。
+      if (!response.ok) {
+        throw new Error(`API_ERROR_${response.status}`);
+      }
+
+      const data = await response.json();
+
       const definitionData = [
         data[0].word,//検索した単語
         data[0].phonetics,//発音記号と音声データ(あれば）
         data[0].meanings //意味、同意語、反意語
       ];
-      console.log("definitionData includes = ", definitionData);   
+
+      currentWordDataData = definitionData;
       return definitionData;
-    })  
+    } catch (error) {
+      lastError = error;
+
+      //404は再試行しても意味が薄い⇒再試行無し
+      if (error.message === "WORD_NOT_FOUND") {
+        throw error;
+      }
+
+      //1回目だけ少し待って再試行
+      if (attempt === 1) {
+        console.warn("Retrying dictionary request...");
+        await wait(700);
+      }
+    }
+  }
+
+  throw lastError;
 }
 
 
@@ -184,24 +215,26 @@ function renderWordData(apiData) {
     audioBtn.textContent = phonetic.text;//ボタン上に発音記号を表示
     audioBtns.appendChild(audioBtn);
 
+    
     //ボタン上にオーディオボタンを併記
-    if (phonetic.audio === "") {
+    if (!phonetic.audio) {
       audioBtn.textContent += "🔇";
     } else {
       audioBtn.textContent += "🔊";
     }
 
     //音声イベント
-    audioBtn.addEventListener("click", () => {
+    audioBtn.addEventListener("click", async () => {
       if (!phonetic.audio) return;
 
       const audio = new Audio(phonetic.audio);
       
-      audio.play().catch((error) => {
-        console.error("再生できない音声URL:", phonetic.audio, error);
-        audioBtn.textContent = `${phonetic.text} 🔇`;
-      })
-      audio.play();
+      try {
+        await audio.play();
+      } catch {
+        console.error("Audio playback failed:", error);
+        alert("Audio is temporarily unavailable.");
+      }      
     });
     
   })//phonetics.forEach{}
@@ -411,7 +444,6 @@ function openDeckCreateModal() {
 
 //【デッキ作成関数】
 function createDeck(name) {
-  
   console.log("Create Deck Btn Clicked");
   //decksに値が一つでもあればsomeIdsにidを抽出して入れる。
   if (decks.length) {    
@@ -432,6 +464,7 @@ function createDeck(name) {
 
 //デッキ追加モーダルを閉じる
 function closeDeckCreateModal() {
+  inputDeckName.value = "";
   console.log("cancel btn clicked")
   modalOverlay.classList.add("hidden");
   deckCreateModal.classList.add("hidden");  

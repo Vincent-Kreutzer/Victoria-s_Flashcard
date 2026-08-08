@@ -1,21 +1,26 @@
 /* =================
    EDIT PAGE
 ================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
 body {
   background-color:#3B2A1D;
 }
 
 #page-wrapper {
-  background:transparent;
-  border-radius:24px;
+  background: transparent;
+  border-radius: 24px;
   
   background-image: url(../images/library.png);
   backdrop-filter: blur(4px);
-  background-size: contain;
-  background-repeat: repeat;
+  background-size:contain;
+  background-repeat: no-repeat;
   background-position: center;
-  width:100%;
+  width: 100%;
   height: 100%;
 }
 
@@ -368,8 +373,8 @@ background: rgba(20,15,10,.15);
   font-size: 1rem;
   padding-left: 1rem;
   flex: 1;
-  min-height: 0;
   overflow-y: auto;
+  width: 100%;
 }
 
 /*info: first-of-type⇒親要素の中で同じタグの最初の要素を指定する疑似クラス*/
@@ -461,7 +466,7 @@ background: rgba(20,15,10,.15);
   background-position: center;
 
   filter: blur(8px);
-  transform: scale(1.05);
+  transform: none;
 }
 
 
@@ -491,7 +496,7 @@ background: rgba(20,15,10,.15);
 }
 
 .modal-title {
-  margin: 2rem;
+  margin: 0 0 1rem;
   color: #F5EED8; 
   text-align: center;
 }
@@ -702,9 +707,49 @@ background: rgba(20,15,10,.15);
 ================= */
 
 @media (max-width: 600px) {
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+  }
+
+  #modal-overlay,
+  #card-edit-modal,
+  #card-panel {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+  }
+
+  #modal-overlay,
+  #card-edit-modal {
+    padding: 0;
+  }
+
+  
+
+  #card-panel {
+    padding: 1rem;         
+    min-height: 100svh;
+    padding: 1rem;  
+    justify-content: flex-start;
+    background-image: url(../images/desk_with_book_responsive.png);
+  }
+  #page-content {
+    width: 100%;
+  }
+
+  
+  #page-wrapper {
+    width: 100%;
+    min-height: 100svh;
+  }
+
   #header {
     flex-direction : column;
-    align-items: stretch;
+    align-items: center;
   }
 
   #header-actions {
@@ -716,14 +761,41 @@ background: rgba(20,15,10,.15);
     width: 100%;
   }
   
+
   #deck-name {
     margin-right: 0;
     text-align: center;
+    justify-content: center;
   }
 
-  #card-edit-modal {
-    flex-direction: column;
-    align-items: stretch;
+  #card-container {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 0 1rem;
+  }
+
+  .word-card {
+    width: 92%;
+    max-width: 28rem;
+    height: auto;
+
+    width: 92%;
+    padding: 0;
+  }
+
+  .card-actions {
+    top: 3rem;
+    right: 2rem;
+    gap: 0.5rem;
+  }
+
+ 
+  .definition-area {
+    width: 90%;
+    height: 50%;
+    padding: 0 0.75rem;
+    margin-top: 15%;
+    margin-bottom: 10%;
   }
 
   #add-card-btn,
@@ -731,12 +803,65 @@ background: rgba(20,15,10,.15);
     width: 100%;
   }
 
-  #card-panel {
-    width: 94%;
-    padding: 24px;
+  
+
+    
+  /*==========
+  モーダル
+  ===========*/
+
+  #card-edit-modal {
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex-direction: column;
+    align-items: stretch;
   }
+
+  #modal-body {
+    width: 94%;
+    height: auto;
+    max-height: 80svh;
+  }
+
+  #word-search-row {
+    display: flex;
+    width: 100%;
+    gap: 0.5rem;
+    margin-top: 0;
+  }
+
+  #word-input {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+  }
+
+  #search-word-btn {
+    flex: 0 0 auto;
+  }
+
+  #modal-definition-area {
+    height: 19rem;    
+    max-height: 19rem;
+    overflow-y: auto;
+    flex: none;
+  }
+
+  #modal-btns {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+  }
+
+
+  
+
+.info-group {
+  margin: 0;
 }
 
+}
 
 /*==========
 その他クラス

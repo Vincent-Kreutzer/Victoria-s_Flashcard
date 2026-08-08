@@ -98,17 +98,18 @@ deleteDeckBtn.addEventListener("click", () => {
 
 
 
-//デッキ名変更イベント付与
+//デッキ名変更イベント
 renameDeckBtn.addEventListener("click", renameDeck);
 
+//カード追加ボタンイベント
 addCardBtn.addEventListener("click", () => {
   modalMode = "add";
-
 
   console.log("クリック時 =", modalMode);
   openCardModal();
 });
 
+//キャンセルボタンイベント
 cancelAddBtn.addEventListener("click", () => {
   modalMode = null;
   closeCardModal();
@@ -452,12 +453,7 @@ function createCardActionsArea(card) {
   const editBtn = document.createElement("button");
   editBtn.textContent = "🖋";//表示
   editBtn.dataset.action = "edit";//動作についてのデータ型  
-  editBtn.dataset.cardId = card.id;//カードのidについてのデータ型
-  editBtn.addEventListener("click", () => {
-    editingCardId = card.id;
-    modalMode = "edit";
-    openCardModal(card);
-  })
+  editBtn.dataset.cardId = card.id;//カードのidについてのデータ型  
   cardActionsArea.appendChild(editBtn);//親要素に追加
   
   //deleteボタン作成
@@ -478,46 +474,97 @@ function createCardActionsArea(card) {
 //========================
 
 
-//APIで単語情報を取得
 
-//単語検索実行関数
-function searchWordData(card = null) {
 
-  //単語入力欄に値がある場合に、その値を渡してfetchを実行
-  if (wordInput.value) {
-    const searchWord = wordInput.value.trim();
+//単語検索実行(新関数):APIで単語情報を取得
+async function searchWordData() {
+  const searchWord = wordInput.value.trim();
 
-    //fetch関数実行
-    fetchDefinition(searchWord)//引数を使ってAPI通信実行
-    
-      //renderWordData()に、検索結果を渡して検索結果を表示
-      .then(results => {
-        renderWordData(results)
-      })
-  } else {
+  if (!searchWord) {
     alert("The word bar is empty.");
     return;
   }
+
+  try {
+    const definitionData = await fetchDefinition(searchWord);
+
+    //検索結果を保存
+    currentWordData = definitionData;
+    
+    //検索成功後、結果を描画
+    renderWordData(definitionData);
+    
+  } catch(error) {
+    console.error("Word search failed:", error);
+
+    if (error.message === "WORD_NOT_FOUND") {
+      alert("The word was not found in the dictionary.");
+      return;
+    }
+
+    if (error.message.startsWith("API_ERROR_")) {
+      alert("The dictionary service returned an error.");
+      return;
+    }
+
+    alert("Could not connect to the dictionary service.");
+  }
 }
 
-//英英翻訳・発音取得⇒これらを配列にして返す
-function fetchDefinition(word) {
-  return fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`)
-    .then(response => response.json())
-    .then(data => {
-      console.log("fetchDefinition = ", data)
 
-      //APIから取得したデータのうち、使えるものをざっくり取り出す。
-      const definitionData = [
-        data[0].word,//検索した単語そのもの
-        data[0].phonetics,//発音記号と音声データ(あれば）
-        data[0].meanings //意味、同意語、反意語など
-      ];
-      console.log("definitionData includes = ", definitionData);
-      latestSearchData = definitionData;
-      return definitionData;
-    })
+function wait(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+
+//英英翻訳・発音取得⇒これらを配列にして返す（新関数）
+async function fetchDefinition(word) {
+  const url = 
+    `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`;
+
+    let lastError;
+
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      try {
+        const response = await fetch(url);
+
+        if (response.status === 404) {
+          throw new Error("WORD_NOT_FOUND");
+        }
+
+        if (!response.ok) {
+              throw new Error(`API_ERROR_${response.status}`);
+            }
+
+        const data = await response.json();
+
+        const definitionData = [
+          data[0].word,
+          data[0].phonetics ?? [],
+          data[0].meanings ?? []
+        ];
+
+        currentWordData = definitionData;
+
+        return definitionData;
+      } catch (error) {
+        lastError = error;
+
+        //404は再試行しても意味が薄い⇒再試行なし
+        if (error.message === "WORD_NOT_FOUND") {
+          throw error;
+        }
+
+        //1回目だけ少し待って再試行
+        if (attempt === 1) {
+          console.warn("Retrying dictionary request...");
+          await wait(700);
+        }
+      }
+    }
+    
+    throw lastError;        
+  }
 
 
 //検索結果から取得した単語情報を新規追加モーダルに表示する
@@ -542,22 +589,30 @@ function renderWordData(definitionData) {
     const audioBtn = document.createElement("button");
     audioBtn.classList.add("audio-btn");//ボタン作成
     audioBtn.textContent = phonetic.text;//ボタン上に発音記号を表示
-
+    modalPhoneticArea.appendChild(audioBtn);
+    
     //オーディオボタンの表示
-    if (phonetic.audio === "") {
-      audioBtn.textContent += "🔇";
+    if (!phonetic.audio) {
+      audioBtn.textContent = "🔇";
     } else {
-      audioBtn.textContent += "🔊";
+      audioBtn.textContent = "🔊";
     }
 
     //オーディオボタンの音声イベント定義
-    audioBtn.addEventListener("click", () => {
-      const audio = new Audio(phonetic.audio);
+    audioBtn.addEventListener("click", async () => {
       if (!phonetic.audio) return;
-      audio.play();
-    })
 
-    modalPhoneticArea.appendChild(audioBtn);
+      const audio = new Audio(phonetic.audio);
+      
+      try {
+        await audio.play();
+      } catch (error) {
+        console.error("Audio playback failed:", error);
+        alert("Audio is temporarily unavailable.");
+      }      
+    });
+
+   
 
   })//phonetics.forEach   
 
@@ -864,7 +919,6 @@ function sortCards() {
 cardContainer.addEventListener("click", (e) => {
  
   const eventTarget = e.target.closest("[data-card-id]");//イベントが起こった子要素取得
-
   if (!eventTarget) return;//変数に値が無ければその先に進んでエラーになるのを防ぐ
 
   //削除イベント：ターゲットにあるデータセットアクションの値がdeleteだった場合に以下の処理を行う
@@ -877,14 +931,16 @@ cardContainer.addEventListener("click", (e) => {
   //編集イベント：ターゲットにあるデータセットアクションの値がeditだった場合に以下の処理を行う
   if (eventTarget.dataset.action === "edit") {    
     
-     const targetCard = cards.find((card) => {
+    const targetCard = cards.find((card) => {
       return card.id === Number(eventTarget.dataset.cardId);      
     });
-    console.log(targetCard)
+      
+    editingCardId = targetCard.id;
     modalMode = "edit";
-    openCardModal(targetCard);
+    openCardModal(targetCard);    
+
   }
-});
+})
 
 scrollTopBtn.addEventListener("click", scrollTop);
 
