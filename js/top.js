@@ -10,10 +10,74 @@ let defaultDeck = [
 ]
 
 let defaultCards = [
-  { id: 1, deckId: 0, word: "dog", meaning: "犬" },
-  { id: 2, deckId: 0, word: "cat", meaning: "猫" },
-  { id: 3, deckId: 0, word: "bird", meaning: "鳥" },
-]
+  {
+    id: 1,
+    deckId: 0,
+    word: "temporal",
+    phonetics: [
+      {
+        text: "/ˈtem.pər.əl/",
+        audio: ""
+      }
+    ],
+    meanings: [
+      {
+        partOfSpeech: "adjective",
+        definitions: [
+          {
+            definition: "時間に関する、一時的な"
+          }
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 2,
+    deckId: 0,
+    word: "cat",
+    phonetics: [
+      {
+        text: "/kæt/",
+        audio: ""
+      }
+    ],
+    meanings: [
+      {
+        partOfSpeech: "noun",
+        definitions: [
+          {
+            definition: "猫"
+          }
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 3,
+    deckId: 0,
+    word: "bird",
+    phonetics: [
+      {
+        text: "/bɜːrd/",
+        audio: ""
+      }
+    ],
+    meanings: [
+      {
+        partOfSpeech: "noun",
+        definitions: [
+          {
+            definition: "鳥"
+          }
+        ]
+      }
+    ]
+  }
+];
+
+
 
 //mapでidを抽出して入れる変数
 let someIds = [];

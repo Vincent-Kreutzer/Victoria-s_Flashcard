@@ -9,10 +9,73 @@ let latestSearchData = null;//最新の検索データを保持する変数
 
 //ローカルストレージからカード情報を受け取って入れる。最初は仮の初期データを格納
 let cards = [
-  { id: 1, deckId: 0, word: "temporal", meaning: "仮" },
-  { id: 2, deckId: 0, word: "cat", meaning: "猫" },
-  { id: 3, deckId: 0, word: "bird", meaning: "鳥" },
+  {
+    id: 1,
+    deckId: 0,
+    word: "temporal",
+    phonetics: [
+      {
+        text: "/ˈtem.pər.əl/",
+        audio: ""
+      }
+    ],
+    meanings: [
+      {
+        partOfSpeech: "adjective",
+        definitions: [
+          {
+            definition: "時間に関する、一時的な"
+          }
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 2,
+    deckId: 0,
+    word: "cat",
+    phonetics: [
+      {
+        text: "/kæt/",
+        audio: ""
+      }
+    ],
+    meanings: [
+      {
+        partOfSpeech: "noun",
+        definitions: [
+          {
+            definition: "猫"
+          }
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 3,
+    deckId: 0,
+    word: "bird",
+    phonetics: [
+      {
+        text: "/bɜːrd/",
+        audio: ""
+      }
+    ],
+    meanings: [
+      {
+        partOfSpeech: "noun",
+        definitions: [
+          {
+            definition: "鳥"
+          }
+        ]
+      }
+    ]
+  }
 ];
+
 
 let editingCardId = null; //編集カードのidを入れる
 let sortMode = null;//カード一覧の並び替えの切り替えに使う
