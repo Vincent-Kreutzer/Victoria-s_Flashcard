@@ -292,19 +292,22 @@ body {
   flex-direction: column;
   position: relative;
 
-  height: 75vh;
-  min-height: 600px;
+  width: 22rem;
+  max-width: 90vw;
+  
+  
   background: #fff;
   border: 1px solid #ececec;
   border-radius: 16px;
   padding: 22px;
   box-shadow: 0 18px 40px rgba(0,0,0,0.18);
   transition: 0.25s ease;/*変化をゆっくり*/
-  aspect-ratio: 1000/1550;
+  aspect-ratio: 1007/1561;
   background-image: url(../images/background_img_vertical.png);
   background-repeat: no-repeat;
   background-position: center;
-  background-size: contain;
+  background-size: cover;
+  
 }
 
 .word-card:hover {
@@ -789,12 +792,9 @@ body {
   }
 
   .word-card {
-    width: 92%;
-    max-width: 28rem;
-    height: auto;
-
-    width: 92%;
-    padding: 0;
+    background-size: 100% 100%;
+    background-position: center;     
+    
   }
 
   .card-actions {

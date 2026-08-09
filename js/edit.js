@@ -1027,13 +1027,6 @@ function loadData() {
   if (localStorage.flashcard_cards) {
     cards = JSON.parse(localStorage.getItem("flashcard_cards"));
 
-  } else {
-
-    cards = [
-      { id: 1, deckId: 0, word: "dog", meaning: "犬" },
-      { id: 2, deckId: 0, word: "cat", meaning: "猫" },
-      { id: 3, deckId: 0, word: "bird", meaning: "鳥" }
-    ];
   }
 }
 
