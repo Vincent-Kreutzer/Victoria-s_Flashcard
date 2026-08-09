@@ -25,7 +25,7 @@ let defaultCards = [
         partOfSpeech: "adjective",
         definitions: [
           {
-            definition: "時間に関する、一時的な"
+            definition: "relating to time rather than space"
           }
         ]
       }
@@ -47,7 +47,7 @@ let defaultCards = [
         partOfSpeech: "noun",
         definitions: [
           {
-            definition: "猫"
+            definition: "a small domesticated animal with soft fur, whiskers, and a long tail"
           }
         ]
       }
@@ -69,7 +69,7 @@ let defaultCards = [
         partOfSpeech: "noun",
         definitions: [
           {
-            definition: "鳥"
+            definition: "an animal with feathers, wings, and a beak, most kinds of which can fly"
           }
         ]
       }
@@ -470,15 +470,14 @@ function closeCardAddModal() {
 
 //新規カード追加モーダル内セレクトタグにデッキを表示する（追加先デッキを選択するため）
 function renderDeckOptions() {
-  //ローカルストレージからデッキ情報を取得して、デッキ数だけオプションタグを増やす。
-  const decks = JSON.parse(localStorage.getItem("flashcard_decks"));
+  selectedDeck.innerHTML = "";
+  
   decks.forEach(deck => {
     const optionTag = document.createElement("option");
     optionTag.value = deck.id;
     optionTag.textContent = deck.name;
     selectedDeck.appendChild(optionTag);   
-  })
-  
+  });
 }
 
 
@@ -507,21 +506,15 @@ function openDeckCreateModal() {
 
 //【デッキ作成関数】
 function createDeck(name) {
-  console.log("Create Deck Btn Clicked");
-  //decksに値が一つでもあればsomeIdsにidを抽出して入れる。
-  if (decks.length) {    
-    //存在するidを抜き出して配列に入れる。
-    someIds = decks.map(deck => deck.id); 
-  } else { 
-    someIds = [-1] //既存デッキが無ければ配列に-1を入れる。
-  }
+
+  const ids = decks.map(deck => deck.id);
   //既存デッキのidの値の最も大きい数値+1を新デッキのidとする
-  const newDeck = {id : Math.max(...someIds) +1, name : name, }
+  const newDeck = {id : Math.max(...ids) +1, name : name, }
   
   decks.push(newDeck);
-  console.log(newDeck);  
   saveData("flashcard_decks", decks);
   renderDeckList();  
+  renderDeckOptions();  
   closeDeckCreateModal();
 }
 
@@ -539,12 +532,21 @@ function closeDeckCreateModal() {
 
 //【ローカルストレージからデータを読み込む関数】
 function loadData() {
-  if (localStorage.flashcard_decks) 
-    decks = JSON.parse(localStorage.getItem("flashcard_decks"));
-  
+  const savedDecks = 
+    JSON.parse(localStorage.getItem("flashcard_decks")) ?? [];  
 
-  if (localStorage.flashcard_cards) 
-    cards = JSON.parse(localStorage.getItem("flashcard_cards"));
+  const savedCards =
+    JSON.parse(localStorage.getItem("flashcard_cards")) ?? [];
+
+  decks = [
+    ...defaultDeck,
+    ...savedDecks.filter(deck => deck.id !== 0)
+  ];
+
+  cards = [
+    ...defaultCards,
+    ...savedCards.filter(card => card.deckId !== 0)
+  ];
   
 }
 
@@ -560,12 +562,10 @@ function saveData(key, value) {
 
 //【画面にデッキを一覧表示する関数】
 function renderDeckList() {
-  deckContainer.innerHTML = "";
+  deckContainer.innerHTML = "";  
 
-  //デッキにカードがあれば、それらを表示する。
-  if (decks.length > 0) {
-    decks.forEach(deck => {
-      
+  //デッキにカードがあれば、それらを表示する。 
+    decks.forEach(deck => {     
             
       //deckCard
       const deckCard = document.createElement("div");    
@@ -626,70 +626,8 @@ function renderDeckList() {
       deckCard.appendChild(cardBtns);
 
       deckContainer.appendChild(deckCard);
-    })  
-    //デッキが一つもなければ仮のデッキを表示する。
-  } else {
-
-      defaultDeck.forEach(deck => {
-
-        console.log(deck);
-        console.log(deck.name);
-        //deckCard(各カードの一番外側のdiv)作成
-        const deckCard = document.createElement("div");
-        deckCard.dataset.deckId = deck.id;//デッキIDをカスタムデータとして持たせる
-      
-        //デッキ名タグ
-        const deckName = document.createElement("h3");     
-        deckName.classList.add("deck-name");
-        deckName.textContent = deck.name;
-        deckCard.appendChild(deckName);  
-
-        //デッキ内のカード数                    
-        const words = document.createElement("p");      
-        words.classList.add("words")
-        words.textContent = "Words: ";      
-
-        const wordCount = document.createElement("span");
-        wordCount.classList.add("word-count");
-        words.appendChild(wordCount);
-        
-        const filteredCards = cards.filter(card => card.deckId === deck.id);
-        wordCount.textContent = filteredCards.length;    
-        deckCard.appendChild(words);
-
-        //学習ページリンク
-        const studyBtn = document.createElement("button");
-        studyBtn.textContent = "Open";   
-        //カードがあるか調べて、なければ学習ページを開かない
-        
-          
-        studyBtn.addEventListener("click", ()=> {
-          
-          const deckCards = cards.filter(card => card.deckId === deckId);     
-          if (deckCards.length === 0) {
-          alert("This deck has no cards yet.");
-          return;
-                    
-          location.href = `study.html?deck=${deck.id}`;            
-          }
-        });
-
-        deckCard.appendChild(studyBtn);
-
-        //編集ページリンク
-        const editBtn = document.createElement("button");
-        editBtn.textContent = "Edit";
-        editBtn.addEventListener("click", () => {
-          location.href = `edit.html?deck=${deck.id}`;
-        })
-      deckCard.appendChild(editBtn);
-
-      deckContainer.appendChild(deckCard);    
-    })
-
-  }
+    })      
 }
-
 
 
 // =================

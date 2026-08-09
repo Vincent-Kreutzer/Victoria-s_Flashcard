@@ -5,6 +5,82 @@
 //===========================
 
 
+let defaultDeck = [
+  { id: 0, name: "sample-deck" }
+];
+
+let defaultCards = [
+  {
+    id: 1,
+    deckId: 0,
+    word: "temporal",
+    phonetics: [
+      {
+        text: "/ˈtem.pər.əl/",
+        audio: ""
+      }
+    ],
+    meanings: [
+      {
+        partOfSpeech: "adjective",
+        definitions: [
+          {
+            definition: "relating to time rather than space"
+          }
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 2,
+    deckId: 0,
+    word: "cat",
+    phonetics: [
+      {
+        text: "/kæt/",
+        audio: ""
+      }
+    ],
+    meanings: [
+      {
+        partOfSpeech: "noun",
+        definitions: [
+          {
+            definition: "a small domesticated animal with soft fur, whiskers, and a long tail"
+          }
+        ]
+      }
+    ]
+  },
+
+  {
+    id: 3,
+    deckId: 0,
+    word: "bird",
+    phonetics: [
+      {
+        text: "/bɜːrd/",
+        audio: ""
+      }
+    ],
+    meanings: [
+      {
+        partOfSpeech: "noun",
+        definitions: [
+          {
+            definition: "an animal with feathers, wings, and a beak, most kinds of which can fly"
+          }
+        ]
+      }
+    ]
+  }
+];
+
+//localStorageからデータを取得する変数。
+let decks = [];
+let cards = [];
+
 //ナビゲーションバー内コマンド等
 //デッキ名表示欄
 const deckNameArea = document.getElementById("deck-name")
@@ -15,9 +91,7 @@ const cardCounter = document.getElementById("card-counter");
 //トップに戻るボタン
 const backBtn = document.getElementById("back-btn");
 
-//localStorageからデータを取得する変数。
-let decks = [];
-let cards = [];
+
 
 let deckCards = [];//選択デッキに内包するカード
 let currentCardIndex = 0;//現在表示しているカードのindex
@@ -85,8 +159,6 @@ function renderCards() {
   //表示用関数にカードを指定して入れる
   currentCard = deckCards[currentCardIndex];
   console.log("currentCard contains " + currentCard);
-
-  const debug = document.createElement("pre");
 
 
   //各表示欄を初期化
@@ -280,10 +352,6 @@ prevCardBtn.addEventListener("click", movePrevCard);
 nextCardBtn.addEventListener("click",moveNextCard);
 lastCardBtn.addEventListener("click", moveLastCard);
 
-document.addEventListener("DOMContentLoaded", () => {
-  loadData();
-  console.log(cards)
-})
 
 // =================
 // STORAGE
@@ -291,17 +359,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //カード全体の情報をlocalStorageから取得してcardsに入れる
 function loadData() {
-  
-  if (localStorage.flashcard_decks) {
-    decks = JSON.parse(localStorage.getItem("flashcard_decks"))
-  }
+  const savedDecks = 
+    JSON.parse(localStorage.getItem("flashcard_decks")) ?? [];
 
-  if (localStorage.flashcard_cards) {
-    cards = JSON.parse(localStorage.getItem("flashcard_cards"));
+  const savedCards = 
+    JSON.parse(localStorage.getItem("flashcard_cards")) ?? [];
 
-  }
-  
+  decks = [
+    ...defaultDeck,
+    ...savedDecks.filter(deck => deck.id !== 0)
+  ];
+
+  cards = [
+    ...defaultCards,
+    ...savedCards.filter(card => card.deckId !== 0)
+  ];
 }
+
 console.log(deckName);
 //DOM読み込み時の処理
 document.addEventListener("DOMContentLoaded", () => {

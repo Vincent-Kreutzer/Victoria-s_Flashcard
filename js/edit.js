@@ -3,12 +3,11 @@
 //DOM取得
 //=================
 
+let defaultDeck = [
+  { id: 0, name: "sample-deck" }
+];
 
-let decks = [];//ローカルストレージとデッキ情報のやり取りをする配列
-let latestSearchData = null;//最新の検索データを保持する変数
-
-//ローカルストレージからカード情報を受け取って入れる。最初は仮の初期データを格納
-let cards = [
+let defaultCards = [
   {
     id: 1,
     deckId: 0,
@@ -24,7 +23,7 @@ let cards = [
         partOfSpeech: "adjective",
         definitions: [
           {
-            definition: "時間に関する、一時的な"
+            definition: "relating to time rather than space"
           }
         ]
       }
@@ -46,7 +45,7 @@ let cards = [
         partOfSpeech: "noun",
         definitions: [
           {
-            definition: "猫"
+            definition: "a small domesticated animal with soft fur, whiskers, and a long tail"
           }
         ]
       }
@@ -68,7 +67,7 @@ let cards = [
         partOfSpeech: "noun",
         definitions: [
           {
-            definition: "鳥"
+            definition: "an animal with feathers, wings, and a beak, most kinds of which can fly"
           }
         ]
       }
@@ -77,7 +76,13 @@ let cards = [
 ];
 
 
+let decks = [];//ローカルストレージとデッキ情報のやり取りをする配列
+let cards = [];
+
+let latestSearchData = null;//最新の検索データを保持する変数
+
 let editingCardId = null; //編集カードのidを入れる
+
 let sortMode = null;//カード一覧の並び替えの切り替えに使う
 let modalMode = null;//モーダルを追加・編集のどちらで開いたかを判定する
 //カード一覧に表示するカードのデッキ情報
@@ -1021,13 +1026,21 @@ window.addEventListener("scroll", () => {
 
 //ローカルストレージからデータを取り出す
 function loadData() {
-  if (localStorage.flashcard_decks)
-    decks = JSON.parse(localStorage.getItem("flashcard_decks"));
+  const savedDecks = 
+    JSON.parse(localStorage.getItem("flashcard_decks")) ?? [];
 
-  if (localStorage.flashcard_cards) {
-    cards = JSON.parse(localStorage.getItem("flashcard_cards"));
+  const savedCards = 
+    JSON.parse(localStorage.getItem("flashcard_cards")) ?? [];
 
-  }
+  decks = [
+    ...defaultDeck,
+    ...savedDecks.filter(deck => deck.id !== 0)
+  ];
+
+  cards = [
+    ...defaultCards,
+    ...savedCards.filter(card => card.deckId !== 0)
+  ];
 }
 
 //ローカルストレージにデータを保存する
